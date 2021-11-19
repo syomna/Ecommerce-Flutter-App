@@ -1,6 +1,6 @@
 class SearchModel {
-  bool status;
-  Data data;
+  bool? status;
+  Data? data;
 
   SearchModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
@@ -9,7 +9,7 @@ class SearchModel {
 }
 
 class Data {
-  List<SearchProduct> data;
+  late List<SearchProduct> data;
 
   Data.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
@@ -22,16 +22,16 @@ class Data {
 }
 
 class SearchProduct {
-  int id;
+  int? id;
   dynamic price;
   dynamic oldPrice;
-  int discount;
-  String image;
-  String name;
-  String description;
+  int? discount;
+  String? image;
+  String? name;
+  String? description;
   // List<String> images;
-  bool inFavorites;
-  bool inCart;
+  bool? inFavorites;
+  bool? inCart;
 
   SearchProduct.fromJson(Map<String, dynamic> json) {
     id = json['id'];

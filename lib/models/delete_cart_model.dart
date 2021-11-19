@@ -1,6 +1,6 @@
 class DeleteCartModel {
-  bool status;
-  String message;
+  bool? status;
+  String? message;
 
   DeleteCartModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];

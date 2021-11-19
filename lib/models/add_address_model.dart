@@ -1,6 +1,6 @@
 class AddAddressModel {
-  bool status;
-  String message;
+  bool? status;
+  String? message;
 
   AddAddressModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];

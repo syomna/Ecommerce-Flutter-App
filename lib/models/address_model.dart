@@ -1,7 +1,7 @@
 class AddressModel {
-  bool status;
+  bool? status;
   Null message;
-  Data data;
+  Data? data;
 
   AddressModel({this.status, this.message, this.data});
 
@@ -15,8 +15,8 @@ class AddressModel {
 }
 
 class Data {
-  int currentPage;
-  List<AddressData> data;
+  int? currentPage;
+  late List<AddressData> data;
 
   Data.fromJson(Map<String, dynamic> json) {
     currentPage = json['current_page'];
@@ -34,14 +34,14 @@ class Data {
 }
 
 class AddressData {
-  int id;
-  String name;
-  String city;
-  String region;
-  String details;
-  String notes;
-  double latitude;
-  double longitude;
+  int? id;
+  String? name;
+  String? city;
+  String? region;
+  String? details;
+  String? notes;
+  double? latitude;
+  double? longitude;
 
 
   AddressData.fromJson(Map<String, dynamic> json) {

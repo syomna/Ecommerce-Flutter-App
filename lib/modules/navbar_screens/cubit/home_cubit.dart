@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geocoder/geocoder.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shop/models/add_address_model.dart';
 import 'package:shop/models/add_order.model.dart';
@@ -36,15 +36,15 @@ class HomeCubit extends Cubit<HomeStates> {
 
   static HomeCubit get(context) => BlocProvider.of(context);
 
-  Categories categoriesModel;
-  List<CategoryData> categories = [];
+  late Categories categoriesModel;
+  List<CategoryData>? categories = [];
 
   void getCategories() async {
     emit(HomeGetCategoriesLoadingState());
     await DioHelper.getData(url: kCategories).then((value) {
       // print(value.data);
       categoriesModel = Categories.fromJson(value.data);
-      categories = categoriesModel.data.data;
+      categories = categoriesModel.data!.data;
       emit(HomeGetCategoriesSuccessState());
     }).catchError((error) {
       print(error);
@@ -52,26 +52,26 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-  HomeData homeData;
-  List<Banners> banners = [];
-  List<Products> products = [];
-  Map<int, bool> favorites = {};
-  Map<int, bool> cart = {};
+  late HomeData homeData;
+  List<Banners>? banners = [];
+  List<Products>? products = [];
+  Map<int?, bool?> favorites = {};
+  Map<int?, bool?> cart = {};
 
   void getHomeData() async {
     emit(HomeGetDataLoadingState());
     await DioHelper.getData(url: kHomeData, token: token).then((value) {
       homeData = HomeData.fromJson(value.data);
-      print(homeData.data.banners.length);
-      banners = homeData.data.banners;
-      products = homeData.data.products;
+      print(homeData.data!.banners!.length);
+      banners = homeData.data!.banners;
+      products = homeData.data!.products;
 
-      print(products.length);
+      print(products!.length);
 
-      homeData.data.products.forEach((element) {
+      homeData.data!.products!.forEach((element) {
         favorites.addAll({element.id: element.inFavorites});
       });
-      homeData.data.products.forEach((element) {
+      homeData.data!.products!.forEach((element) {
         cart.addAll({element.id: element.inCart});
       });
 
@@ -82,12 +82,12 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-  ChangeFavoritesModel changeFavoritesModel;
+  ChangeFavoritesModel? changeFavoritesModel;
 
-  void changeFavorites(int productId) async {
+  void changeFavorites(int? productId) async {
     emit(HomeChangeFavoritesLoadingState());
 
-    favorites[productId] = !favorites[productId];
+    favorites[productId] = !favorites[productId]!;
     emit(HomeGetFavoritesChangeState());
     await DioHelper.postData(
         url: kfavorites,
@@ -95,8 +95,8 @@ class HomeCubit extends Cubit<HomeStates> {
         data: {'product_id': productId}).then((value) {
       print(value.data);
       changeFavoritesModel = ChangeFavoritesModel.fromJson(value.data);
-      if (!changeFavoritesModel.status) {
-        favorites[productId] = !favorites[productId];
+      if (!changeFavoritesModel!.status!) {
+        favorites[productId] = !favorites[productId]!;
       } else {
         getFavorites();
       }
@@ -104,12 +104,12 @@ class HomeCubit extends Cubit<HomeStates> {
       emit(HomeChangeFavoritesSuccessState(changeFavoritesModel));
     }).catchError((error) {
       print(error.toString());
-      favorites[productId] = !favorites[productId];
+      favorites[productId] = !favorites[productId]!;
       emit(HomeChangeFavoritesErrorState(error.toString()));
     });
   }
 
-  FavoriteModel favoriteModel;
+  late FavoriteModel favoriteModel;
 
   void getFavorites() async {
     emit(HomeGetFavoritesLoadingState());
@@ -126,12 +126,12 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-  ChangeCartModel changeCartModel;
+  ChangeCartModel? changeCartModel;
 
-  void addToOrRemoveFromCart(int productId) async {
+  void addToOrRemoveFromCart(int? productId) async {
     emit(HomeChangeCartLoadingState());
 
-    cart[productId] = !cart[productId];
+    cart[productId] = !cart[productId]!;
     emit(HomeGetCartChangeState());
     await DioHelper.postData(
         url: kCart,
@@ -139,8 +139,8 @@ class HomeCubit extends Cubit<HomeStates> {
         data: {'product_id': productId}).then((value) {
       print(value.data);
       changeCartModel = ChangeCartModel.fromJson(value.data);
-      if (!changeCartModel.status) {
-        cart[productId] = !cart[productId];
+      if (!changeCartModel!.status!) {
+        cart[productId] = !cart[productId]!;
       } else {
         getCart();
       }
@@ -148,12 +148,12 @@ class HomeCubit extends Cubit<HomeStates> {
       emit(HomeChangeCartSuccessState(changeCartModel));
     }).catchError((error) {
       print(error.toString());
-      cart[productId] = !cart[productId];
+      cart[productId] = !cart[productId]!;
       emit(HomeChangeCartErrorState(error.toString()));
     });
   }
 
-  CartModel cartModel;
+ CartModel? cartModel;
 
   void getCart() async {
     emit(HomeGetCartLoadingState());
@@ -164,7 +164,7 @@ class HomeCubit extends Cubit<HomeStates> {
       print(value.data);
       cartModel = CartModel.fromJson(value.data);
       CacheHelper.setData(
-          key: 'CartLength', value: cartModel.data.cartItems.length);
+          key: 'CartLength', value: cartModel?.data!.cartItems.length);
       emit(HomeGetCartSuccessState());
     }).catchError((error) {
       print(error.toString());
@@ -175,7 +175,7 @@ class HomeCubit extends Cubit<HomeStates> {
   List<int> counter = [];
 
   quantityIncrement(int index) {
-    if (counter.length < cartModel.data.cartItems.length) {
+    if (counter.length < cartModel!.data!.cartItems.length) {
       counter.add(1);
     }
     counter[index]++;
@@ -183,7 +183,7 @@ class HomeCubit extends Cubit<HomeStates> {
   }
 
   quantityDecrement(int index) {
-    if (counter.length < cartModel.data.cartItems.length) {
+    if (counter.length < cartModel!.data!.cartItems.length) {
       counter.add(1);
     }
     counter[index]--;
@@ -193,9 +193,9 @@ class HomeCubit extends Cubit<HomeStates> {
     emit(HomeQuantityDecrementState());
   }
 
-  UpdateCartModel updateCartModel;
+  UpdateCartModel? updateCartModel;
 
-  Future updateCart(int cartProductId, int quantity) async {
+  Future updateCart(int? cartProductId, int quantity) async {
     emit(HomeUpdateCartLoadingState());
     await DioHelper.putData(
         url: kCart + '/' + '$cartProductId',
@@ -211,9 +211,9 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-  DeleteCartModel deleteCartModel;
+  DeleteCartModel? deleteCartModel;
 
-  void deleteCart(int cartId) async {
+  void deleteCart(int? cartId) async {
     emit(HomeDeleteCartLoadingState());
     await DioHelper.deleteData(url: kCart + '/' + '$cartId', token: token)
         .then((value) {
@@ -227,9 +227,9 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-  ProductsByCategoryModel productsByCategoryModel;
+  late ProductsByCategoryModel productsByCategoryModel;
 
-  Future getProductsByCategory(int id) async {
+  Future getProductsByCategory(int? id) async {
     emit(HomeGetProductsByCategoryLoadingState());
     await DioHelper.getData(
         url: kGetProductsByCategory,
@@ -253,9 +253,9 @@ class HomeCubit extends Cubit<HomeStates> {
     emit(HomeChangeExtendDetailsState());
   }
 
-  ProductsDetails productsDetails;
+  late ProductsDetails productsDetails;
 
-  Future getProductsDetails(int id) async {
+  Future getProductsDetails(int? id) async {
     emit(HomeGetProductsDetailsLoadingState());
     await DioHelper.getData(
       url: kGetProductDetails + '$id',
@@ -270,7 +270,7 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-  SearchModel searchModel;
+  SearchModel? searchModel;
 
   void searchProducts(String value) async {
     emit(HomeGetSearchLoadingState());
@@ -289,7 +289,7 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-  UserModel userModel;
+  late UserModel userModel;
 
   void getUserData() async {
     emit(HomeGetUserDataLoadingState());
@@ -303,10 +303,10 @@ class HomeCubit extends Cubit<HomeStates> {
   }
 
   void updateProfile({
-    String name,
-    String email,
-    String phone,
-    String image,
+    String? name,
+    String? email,
+    String? phone,
+    String? image,
   }) async {
     emit(HomeUpdateUserDataLoadingState());
     await DioHelper.putData(url: kUpdateProfile, token: token, data: {
@@ -331,24 +331,26 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-  Coordinates coordinates;
-  Address address;
+  Position? position;
+  Placemark? address;
 
   pickMyCurrentLocation() async {
     emit(HomeGetCurrentLocationLoading());
     bool isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
 
     if (isLocationServiceEnabled) {
-      Position position = await Geolocator.getCurrentPosition(
+     position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
-      print('latitude is ${position.latitude}');
-      print('longitude is ${position.longitude}');
-      coordinates = Coordinates(position.latitude, position.longitude);
-      var addresses =
-          await Geocoder.local.findAddressesFromCoordinates(coordinates);
-      address = addresses.first;
-      print(address.addressLine);
-      emit(HomeGetCurrentLocationSuccess());
+      print('latitude is ${position?.latitude}');
+      print('longitude is ${position?.longitude}');
+      if(position != null){
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+            position!.latitude, position!.longitude);
+        address = placemarks.first;
+
+        print(address?.country);
+        emit(HomeGetCurrentLocationSuccess());
+      }
     } else {
       await Geolocator.openLocationSettings();
       LocationPermission permission = await Geolocator.checkPermission();
@@ -375,30 +377,30 @@ class HomeCubit extends Cubit<HomeStates> {
     emit(HomeRadioButtonWorkState());
   }
 
-  String selectedAddress = '0';
+  String? selectedAddress = '0';
 
   addressRadioOnChanged(value) {
     selectedAddress = value;
     emit(HomeAddressRadioButtonHomeState());
   }
 
-  String selectedPaymentMethod = 'cash';
+  String? selectedPaymentMethod = 'cash';
 
   paymentMethodRadioOnChanged(value) {
     selectedPaymentMethod = value;
     emit(HomePaymentMethodRadioButtonHomeState());
   }
 
-  AddAddressModel addAddressModel;
+  AddAddressModel? addAddressModel;
 
   Future postAddress({
-    @required String name,
-    @required String city,
-    @required String region,
-    @required String details,
+    required String name,
+    required String city,
+    required String region,
+    required String details,
     dynamic latitude,
     dynamic longitude,
-    @required String notes,
+    required String notes,
   }) async {
     emit(HomePostAddressLoading());
     await DioHelper.postData(
@@ -424,7 +426,7 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-  AddressModel addressModel;
+  late AddressModel addressModel;
 
   Future getUserAddress() async {
     emit(HomeGetAddressLoading());
@@ -438,9 +440,9 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-  DeleteAddressModel deleteAddressModel;
+  DeleteAddressModel? deleteAddressModel;
 
-  deleteUserAddress({@required int addressId}) async {
+  deleteUserAddress({required int? addressId}) async {
     emit(HomeDeleteAddressLoading());
     await DioHelper.deleteData(url: kAddresses + '/$addressId', token: token)
         .then((value) {
@@ -454,13 +456,13 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-  AddOrderModel addOrderModel;
+  AddOrderModel? addOrderModel;
 
   Future addOrder(
-      {@required int addressId,
-      @required int paymentMethod,
-      @required bool usePoints,
-      @required int promoCodeId}) async {
+      {required int addressId,
+      required int paymentMethod,
+      required bool usePoints,
+      required int promoCodeId}) async {
     emit(HomeAddOrderLoadingState());
     await DioHelper.postData(
             url: kOrders,
@@ -474,7 +476,7 @@ class HomeCubit extends Cubit<HomeStates> {
         .then((value) {
       print(value.data);
       addOrderModel = AddOrderModel.fromJson(value.data);
-      cartModel.data.cartItems.clear();
+      cartModel?.data!.cartItems.clear();
       // deleteCart();
       emit(HomeAddOrderSuccessState(addOrderModel));
     }).catchError((error) {
@@ -483,7 +485,7 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-  OrderModel orderModel;
+  late OrderModel orderModel;
 
   Future getOrders() async {
     emit(HomeGetOrdersLoadingState());
@@ -497,9 +499,9 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-  OrderDetailsModel orderDetailsModel;
+  late OrderDetailsModel orderDetailsModel;
 
-  Future getOrderDetails(int orderId) async {
+  Future getOrderDetails(int? orderId) async {
     emit(HomeGetOrderDetailsLoadingState());
     await DioHelper.getData(url: kOrders + '/' + '$orderId', token: token)
         .then((value) {

@@ -1,7 +1,7 @@
 class OrderModel {
-  bool status;
+  bool? status;
   Null message;
-  Data data;
+  Data? data;
 
   OrderModel({this.status, this.message, this.data});
 
@@ -13,9 +13,9 @@ class OrderModel {
 }
 
 class Data {
-  List<OrderData> data;
+  late List<OrderData> data;
 
-  int total;
+  int? total;
 
   Data.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
@@ -30,10 +30,10 @@ class Data {
 }
 
 class OrderData {
-  int id;
+  int? id;
   dynamic total;
-  String date;
-  String status;
+  String? date;
+  String? status;
 
   OrderData.fromJson(Map<String, dynamic> json) {
     id = json['id'];

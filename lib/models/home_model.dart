@@ -1,6 +1,6 @@
 class HomeData {
-  bool status;
-  Data data;
+  bool? status;
+  Data? data;
 
   HomeData.fromJson(Map<String, dynamic> json) {
     status = json['status'];
@@ -9,21 +9,21 @@ class HomeData {
 }
 
 class Data {
-  List<Banners> banners;
-  List<Products> products;
-  String ad;
+  List<Banners>? banners;
+  List<Products>? products;
+  String? ad;
 
   Data.fromJson(Map<String, dynamic> json) {
     if (json['banners'] != null) {
       banners = [];
       json['banners'].forEach((v) {
-        banners.add(new Banners.fromJson(v));
+        banners!.add(new Banners.fromJson(v));
       });
     }
     if (json['products'] != null) {
       products = [];
       json['products'].forEach((v) {
-        products.add(new Products.fromJson(v));
+        products!.add(new Products.fromJson(v));
       });
     }
     ad = json['ad'];
@@ -31,9 +31,9 @@ class Data {
 }
 
 class Banners {
-  int id;
-  String image;
-  Category category;
+  int? id;
+  String? image;
+  Category? category;
 
   Banners.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -45,9 +45,9 @@ class Banners {
 }
 
 class Category {
-  int id;
-  String image;
-  String name;
+  int? id;
+  String? image;
+  String? name;
 
   Category.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -57,16 +57,16 @@ class Category {
 }
 
 class Products {
-  int id;
+  int? id;
   dynamic price;
   dynamic oldPrice;
   dynamic discount;
-  String image;
-  String name;
-  String description;
+  String? image;
+  String? name;
+  String? description;
   //List<String> images;
-  bool inFavorites;
-  bool inCart;
+  bool? inFavorites;
+  bool? inCart;
 
   Products.fromJson(Map<String, dynamic> json) {
     id = json['id'];

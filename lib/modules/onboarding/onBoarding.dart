@@ -19,13 +19,14 @@ class _OnBoardingState extends State<OnBoarding> {
         title: 'Shopping Online',
         subtitle: 'We help you to get what you want in the most easiest way!',
         image: 'assets/images/onboarding_one.png'),
-    OnBoardingData(
-        title: 'WishList',
-        subtitle: 'Mark your wish products to reach them easier!',
-        image: 'assets/images/onboarding_two.png'),
+    
     OnBoardingData(
         title: 'Adding To Cart',
         subtitle: 'Collect your products to order them in one package!',
+        image: 'assets/images/onboarding_two.png'),
+        OnBoardingData(
+        title: 'Delivery',
+        subtitle: 'Order and get your products wherever you are!',
         image: 'assets/images/onboarding_three.png'),
   ];
 
@@ -47,7 +48,7 @@ class _OnBoardingState extends State<OnBoarding> {
                 style: TextStyle(
                     color: defaultColor,
                     fontWeight: FontWeight.bold,
-                    fontSize: 18),
+                    fontSize: 16),
               ))
         ],
       ),
@@ -58,9 +59,11 @@ class _OnBoardingState extends State<OnBoarding> {
           children: [
             Expanded(
               child: PageView.builder(
+                allowImplicitScrolling: true,
+                
                   onPageChanged: (value) {
                     if (value == onBoarding.length - 1) {
-                      print(value);
+                      print('$value the last');
                       setState(() {
                         isLast = true;
                       });
@@ -72,6 +75,7 @@ class _OnBoardingState extends State<OnBoarding> {
                     }
                   },
                   controller: pageController,
+                  itemCount: onBoarding.length,
                   itemBuilder: (context, index) {
                     return boardingBuild(onBoarding[index], context);
                   }),
@@ -86,6 +90,7 @@ class _OnBoardingState extends State<OnBoarding> {
                     listLength: onBoarding.length),
                 Spacer(),
                 FloatingActionButton(
+                  backgroundColor: defaultColor,
                     child: Icon(Icons.arrow_right_outlined),
                     onPressed: () {
                       if (isLast == false) {
@@ -112,7 +117,7 @@ class _OnBoardingState extends State<OnBoarding> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Image(image: AssetImage(data.image)),
+        Image(image: AssetImage(data.image) , errorBuilder: (context , child , stack) => Icon(Icons.broken_image),),
       const  SizedBox(
           height: 15,
         ),
@@ -122,7 +127,7 @@ class _OnBoardingState extends State<OnBoarding> {
             textAlign: TextAlign.center,
             style: Theme.of(context)
                 .textTheme
-                .headline4
+                .headline4!
                 .copyWith(fontWeight: FontWeight.bold, color: Colors.black),
           ),
           subtitle: Text(
@@ -130,7 +135,7 @@ class _OnBoardingState extends State<OnBoarding> {
             textAlign: TextAlign.center,
             style: Theme.of(context)
                 .textTheme
-                .headline6
+                .headline6!
                 .copyWith(color: Colors.grey[700]),
           ),
         )
@@ -145,5 +150,5 @@ class OnBoardingData {
   String image;
 
   OnBoardingData(
-      {@required this.title, @required this.subtitle, @required this.image});
+      {required this.title, required this.subtitle, required this.image});
 }

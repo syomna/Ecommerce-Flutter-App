@@ -23,7 +23,7 @@ class HomeGetDataErrorState extends HomeStates {
 class HomeChangeFavoritesLoadingState extends HomeStates {}
 
 class HomeChangeFavoritesSuccessState extends HomeStates {
-  final ChangeFavoritesModel model;
+  final ChangeFavoritesModel? model;
   HomeChangeFavoritesSuccessState(this.model);
 }
 
@@ -46,7 +46,7 @@ class HomeGetFavoritesErrorState extends HomeStates {
 class HomeChangeCartLoadingState extends HomeStates {}
 
 class HomeChangeCartSuccessState extends HomeStates {
-  final ChangeCartModel model;
+  final ChangeCartModel? model;
   HomeChangeCartSuccessState(this.model);
 }
 
@@ -73,7 +73,7 @@ class HomeQuantityDecrementState extends HomeStates {}
 class HomeUpdateCartLoadingState extends HomeStates {}
 
 class HomeUpdateCartSuccessState extends HomeStates {
-  final UpdateCartModel model;
+  final UpdateCartModel? model;
   HomeUpdateCartSuccessState(this.model);
 }
 
@@ -112,7 +112,7 @@ class HomeGetProductsDetailsErrorState extends HomeStates {
 class HomeGetSearchLoadingState extends HomeStates {}
 
 class HomeGetSearchSuccessState extends HomeStates {
-  final SearchModel searchModel;
+  final SearchModel? searchModel;
   HomeGetSearchSuccessState(this.searchModel);
 }
 
@@ -155,7 +155,7 @@ class HomeGetCurrentLocationError extends HomeStates {
 class HomePostAddressLoading extends HomeStates {}
 
 class HomePostAddressSuccess extends HomeStates {
-  final AddAddressModel addAddressModel;
+  final AddAddressModel? addAddressModel;
   HomePostAddressSuccess(this.addAddressModel);
 }
 
@@ -184,7 +184,7 @@ class HomeGetAddressError extends HomeStates {
 class HomeDeleteAddressLoading extends HomeStates {}
 
 class HomeDeleteAddressSuccess extends HomeStates {
-  final DeleteAddressModel deleteAddressModel;
+  final DeleteAddressModel? deleteAddressModel;
   HomeDeleteAddressSuccess(this.deleteAddressModel);
 }
 
@@ -196,7 +196,7 @@ class HomeDeleteAddressError extends HomeStates {
 class HomeAddOrderLoadingState extends HomeStates {}
 
 class HomeAddOrderSuccessState extends HomeStates {
-  final AddOrderModel addOrderModel;
+  final AddOrderModel? addOrderModel;
   HomeAddOrderSuccessState(this.addOrderModel);
 }
 
@@ -226,7 +226,7 @@ class HomeGetOrderDetailsErrorState extends HomeStates {
 class HomeDeleteCartLoadingState extends HomeStates {}
 
 class HomeDeleteCartSuccessState extends HomeStates {
-  final DeleteCartModel deleteCartModel;
+  final DeleteCartModel? deleteCartModel;
   HomeDeleteCartSuccessState(this.deleteCartModel);
 }
 

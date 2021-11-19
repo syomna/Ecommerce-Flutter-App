@@ -14,7 +14,7 @@ class LayoutCubit extends Cubit<LayoutStates> {
 
   static LayoutCubit get(context) => BlocProvider.of(context);
 
-  int cartLength = 0;
+  int? cartLength = 0;
   getCartLength() {
     cartLength = CacheHelper.getData('CartLength');
     emit(LayoutCartLengthState());
@@ -34,17 +34,17 @@ class LayoutCubit extends Cubit<LayoutStates> {
     AccountScreen()
   ];
 
-  List<String> layoutTitle = ['Home', 'Search', 'WishList', 'Account'];
+  List<String> layoutTitle = ['Y-Shop', 'Search', 'WishList', 'Account'];
 
   List<BottomNavigationBarItem> bottomNavList = [
-    BottomNavigationBarItem(icon: Icon(Icons.home), title: Text('Home')),
-    BottomNavigationBarItem(icon: Icon(Icons.search), title: Text('Search')),
+    BottomNavigationBarItem(icon: Icon(Icons.home), label:'Home'),
+    BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
     BottomNavigationBarItem(
         icon: Icon(
           Icons.favorite_border,
         ),
-        title: Text('Wishlist')),
+        label: 'Wishlist'),
     BottomNavigationBarItem(
-        icon: Icon(Icons.person_outlined), title: Text('Account')),
+        icon: Icon(Icons.person_outlined), label: 'Account'),
   ];
 }

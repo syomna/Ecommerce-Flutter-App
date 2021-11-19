@@ -1,6 +1,6 @@
 class AddOrderModel {
-  bool status;
-  String message;
+  bool? status;
+  String? message;
 
   AddOrderModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];

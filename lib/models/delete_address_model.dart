@@ -1,6 +1,6 @@
 class DeleteAddressModel {
-  bool status;
-  String message;
+  bool? status;
+  String? message;
 
   DeleteAddressModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];

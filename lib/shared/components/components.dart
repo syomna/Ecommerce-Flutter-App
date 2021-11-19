@@ -1,10 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:shop/models/category_model.dart';
-import 'package:shop/models/home_model.dart';
 import 'package:shop/modules/navbar_screens/cubit/home_cubit.dart';
-import 'package:shop/modules/navbar_screens/products/all_products_screen.dart';
 import 'package:shop/modules/navbar_screens/products/product_by_category_screen.dart';
 import 'package:shop/modules/navbar_screens/products/product_details_screen.dart';
 import 'package:shop/shared/styles/themes.dart';
@@ -13,37 +12,37 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 final kFormatCurrency =
     NumberFormat.simpleCurrency(locale: 'en_EG', name: 'EG ');
 
-TextStyle appBarStyle(context) =>
-    Theme.of(context).textTheme.headline6.copyWith(fontWeight: FontWeight.bold);
-
+TextStyle appBarStyle(context) => Theme.of(context)
+    .textTheme
+    .headline6!
+    .copyWith(fontWeight: FontWeight.bold);
 
 Widget defaultTextField(
-    {@required String label,
-    @required TextEditingController controller,
-    @required IconData prefixIcon,
-    @required Function validator,
-    TextInputType keyboardType,
-    Function onSubmit,
-    Function onIconPressed,
+    {required String label,
+    required TextEditingController controller,
+    required IconData prefixIcon,
+    required Function validator,
+    TextInputType? keyboardType,
+    Function? onSubmit,
+    Function? onIconPressed,
     bool isPassword = false,
-    IconData suffixIcon}) {
-      
+    IconData? suffixIcon}) {
   return TextFormField(
     controller: controller,
-    validator: validator,
+    validator: validator as String? Function(String?)?,
     obscureText: isPassword,
     keyboardType: keyboardType,
-    onFieldSubmitted: onSubmit,
+    onFieldSubmitted: onSubmit as void Function(String)?,
     decoration: InputDecoration(
       suffixIcon: IconButton(
         icon: Icon(suffixIcon),
-        onPressed: onIconPressed,
+        onPressed: onIconPressed as void Function()?,
       ),
       prefixIcon: Icon(prefixIcon),
-      border: OutlineInputBorder(
-        borderSide: BorderSide(),
-        borderRadius: BorderRadius.circular(10),
-      ),
+      // border: OutlineInputBorder(
+      //   borderSide: BorderSide(),
+      //   borderRadius: BorderRadius.circular(10),
+      // ),
       labelText: label,
     ),
   );
@@ -53,17 +52,19 @@ Widget defaultButton(String buttonText, Function onPressed, context,
     {bool isUpdate = false, Color color = defaultColor}) {
   return MaterialButton(
       color: isUpdate ? Colors.green : color,
-      padding: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(14.0),
       minWidth: double.infinity,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
         buttonText,
-        style:
-            Theme.of(context).textTheme.bodyText1.copyWith(color: Colors.white),
+        style: Theme.of(context)
+            .textTheme
+            .bodyText1
+            ?.copyWith(color: Colors.white),
       ),
-      onPressed: onPressed);
+      onPressed: onPressed as void Function()?);
 }
 
 navigateAndReplacment(context, Widget widget) => Navigator.of(context)
@@ -72,8 +73,8 @@ navigateAndReplacment(context, Widget widget) => Navigator.of(context)
 navigateTo(context, Widget widget) =>
     Navigator.of(context).push(MaterialPageRoute(builder: (context) => widget));
 
-Future<bool> showToast(
-        {@required String toastText, @required ToastColor toastColor}) =>
+Future<bool?> showToast(
+        {required String? toastText, required ToastColor toastColor}) =>
     Fluttertoast.showToast(
         msg: '$toastText',
         toastLength: Toast.LENGTH_LONG,
@@ -83,8 +84,8 @@ Future<bool> showToast(
         textColor: Colors.white,
         fontSize: 16.0);
 
-Color toastBackgroundColor(ToastColor toast) {
-  Color color;
+Color? toastBackgroundColor(ToastColor toast) {
+  Color? color;
   switch (toast) {
     case ToastColor.SUCESS:
       color = Colors.green;
@@ -100,11 +101,12 @@ Color toastBackgroundColor(ToastColor toast) {
 enum ToastColor { SUCESS, ERROR }
 
 Widget buildSmoothPageIndicator(
-    {@required PageController pageController, @required int listLength}) {
+    {required PageController pageController, required int listLength}) {
   return SmoothPageIndicator(
       controller: pageController, // PageController
       count: listLength,
-      effect: ExpandingDotsEffect(), // your preferred effect
+      effect: ExpandingDotsEffect(
+          activeDotColor: defaultColor), // your preferred effect
       onDotClicked: (index) {});
 }
 
@@ -130,10 +132,25 @@ Widget buildGridItems(model, context, HomeCubit cubit) {
                     ? Center(
                         child: Icon(Icons.image_search),
                       )
-                    : Image(
+                    : CachedNetworkImage(
                         height: MediaQuery.of(context).size.height * 0.18,
-                        image: NetworkImage('${model.image}'),
+                        imageUrl: '${model.image}',
+                        progressIndicatorBuilder:
+                            (context, url, downloadProgress) => SizedBox(
+                        
+                          child: Center(
+                            child: CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            Icon(Icons.broken_image),
                       ),
+                // Image(
+                //     height: MediaQuery.of(context).size.height * 0.18,
+                //     errorBuilder: (BuildContext context , Object child, StackTrace? trace) => Icon(Icons.broken_image),
+                //     image: NetworkImage('${model.image}'),
+                //   ),
                 model.discount != 0
                     ? Container(
                         color: Colors.red,
@@ -153,7 +170,7 @@ Widget buildGridItems(model, context, HomeCubit cubit) {
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context)
                 .textTheme
-                .bodyText2
+                .bodyText2!
                 .copyWith(fontWeight: FontWeight.bold),
           ),
           Spacer(),
@@ -181,12 +198,12 @@ Widget buildGridItems(model, context, HomeCubit cubit) {
                 flex: 2,
                 child: MaterialButton(
                     padding: const EdgeInsets.all(2.0),
-                    color: cubit.cart[model.id] ? defaultColor : Colors.grey,
+                    color: cubit.cart[model.id]! ? defaultColor : Colors.grey,
                     onPressed: () {
                       cubit.addToOrRemoveFromCart(model.id);
                     },
                     child: Text(
-                      cubit.cart[model.id]
+                      cubit.cart[model.id]!
                           ? 'added to cart'.toUpperCase()
                           : 'add to cart'.toUpperCase(),
                       textAlign: TextAlign.center,
@@ -197,7 +214,7 @@ Widget buildGridItems(model, context, HomeCubit cubit) {
                 onPressed: () {
                   cubit.changeFavorites(model.id);
                 },
-                icon: cubit.favorites[model.id]
+                icon: cubit.favorites[model.id]!
                     ? Icon(
                         Icons.favorite,
                         color: Colors.red,
@@ -219,7 +236,7 @@ Widget categoriesContainer(CategoryData category, HomeCubit cubit, context) {
         print(category.id.toString());
         print(value);
         print(
-            'the products by category ${cubit.productsByCategoryModel.data.data.length}');
+            'the products by category ${cubit.productsByCategoryModel.data!.data.length}');
         navigateTo(context, ProductsByCategoryScreen('${category.name}'));
       });
     },
@@ -229,10 +246,20 @@ Widget categoriesContainer(CategoryData category, HomeCubit cubit, context) {
       child: Stack(
         alignment: AlignmentDirectional.bottomCenter,
         children: [
-          Image(
-            image: NetworkImage('${category.image}'),
+          CachedNetworkImage(
             fit: BoxFit.fill,
+            imageUrl: '${category.image}',
+            progressIndicatorBuilder: (context, url, downloadProgress) =>
+                CircularProgressIndicator(value: downloadProgress.progress),
+            errorWidget: (context, url, error) => Icon(Icons.error),
           ),
+          // Image(
+          //   image: NetworkImage('${category.image}'),
+          //   errorBuilder:
+          //       (BuildContext context, Object child, StackTrace? trace) =>
+          //           Icon(Icons.broken_image),
+          //   fit: BoxFit.fill,
+          // ),
           Container(
             color: Colors.black.withOpacity(0.7),
             padding: const EdgeInsets.all(2.0),
@@ -266,8 +293,11 @@ Widget buildListViewItems(model, context, HomeCubit cubit,
           children: [
             Expanded(
               flex: 1,
-              child: Image(
-                image: NetworkImage('${model.image}'),
+              child: CachedNetworkImage(
+                imageUrl: '${model.image}',
+                progressIndicatorBuilder: (context, url, downloadProgress) =>
+                    CircularProgressIndicator(value: downloadProgress.progress),
+                errorWidget: (context, url, error) => Icon(Icons.error),
               ),
             ),
             const SizedBox(
@@ -286,8 +316,8 @@ Widget buildListViewItems(model, context, HomeCubit cubit,
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        model.oldPrice == null
-                            ? Container()
+                        model.oldPrice == null || model.oldPrice == model.price
+                            ? SizedBox.shrink()
                             : Text(
                                 isSearch ? '' : '${model.oldPrice} ',
                                 style: TextStyle(

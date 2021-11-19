@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geocoder/geocoder.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:shop/modules/navbar_screens/account/address/address_screen.dart';
 import 'package:shop/modules/navbar_screens/cubit/home_cubit.dart';
 import 'package:shop/modules/navbar_screens/cubit/home_states.dart';
@@ -28,13 +26,13 @@ class AddAddressScreen extends StatelessWidget {
     return BlocConsumer<HomeCubit, HomeStates>(
       listener: (context, state) {
         if (state is HomePostAddressSuccess) {
-          if (!state.addAddressModel.status) {
+          if (!state.addAddressModel!.status!) {
             showToast(
-                toastText: state.addAddressModel.message,
+                toastText: state.addAddressModel!.message,
                 toastColor: ToastColor.ERROR);
           } else {
             showToast(
-                toastText: state.addAddressModel.message,
+                toastText: state.addAddressModel!.message,
                 toastColor: ToastColor.SUCESS);
           }
         }
@@ -87,7 +85,7 @@ class AddAddressScreen extends StatelessWidget {
                       prefixIcon: Icons.book,
                       validator: (value) {
                         if (value.isEmpty) {
-                          return 'Please enter the name';
+                          return 'Please type some notes';
                         }
                       },
                     ),
@@ -100,19 +98,19 @@ class AddAddressScreen extends StatelessWidget {
                             child: CircularProgressIndicator(),
                           )
                         : defaultButton('Save Address', () {
-                            if (formKey.currentState.validate()) {
+                            if (formKey.currentState!.validate()) {
                               if (cubit.address != null) {
                                 cubit
                                     .postAddress(
                                         name: cubit.radioValue,
-                                        city: cubit.address.adminArea,
-                                        region: cubit.address.locality,
-                                        details: cubit.address.addressLine,
+                                        city: cubit.address!.administrativeArea!,
+                                        region: cubit.address!.locality!,
+                                        details: cubit.address!.street!,
                                         notes: notesController.text,
                                         latitude:
-                                            cubit.address.coordinates.latitude,
+                                            cubit.position?.latitude,
                                         longitude:
-                                            cubit.address.coordinates.longitude)
+                                            cubit.position?.longitude)
                                     .then((value) {
                                   navigateAndReplacment(
                                       context, AddressSreen());
@@ -141,7 +139,7 @@ class AddAddressScreen extends StatelessWidget {
         Radio(
             value: 'home',
             groupValue: cubit.radioValue,
-            onChanged: (value) {
+            onChanged: (dynamic value) {
               print(value);
               cubit.homeOnChanged(value);
             }),
@@ -152,7 +150,7 @@ class AddAddressScreen extends StatelessWidget {
         Radio(
             value: 'work',
             groupValue: cubit.radioValue,
-            onChanged: (value) {
+            onChanged: (dynamic value) {
               print(value);
               cubit.workOnChanged(value);
             }),

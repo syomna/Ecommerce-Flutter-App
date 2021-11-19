@@ -1,6 +1,6 @@
 class ProductsByCategoryModel {
-  bool status;
-  Data data;
+  bool? status;
+  Data? data;
 
   ProductsByCategoryModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
@@ -11,7 +11,7 @@ class ProductsByCategoryModel {
 
 class Data {
 
-  List<ProductByCategoryData> data;
+  late List<ProductByCategoryData> data;
 
 
   Data.fromJson(Map<String, dynamic> json) {
@@ -28,16 +28,16 @@ class Data {
 }
 
 class ProductByCategoryData {
-  int id;
+  int? id;
   dynamic price;
   dynamic oldPrice;
-  int discount;
-  String image;
-  String name;
-  String description;
+  int? discount;
+  String? image;
+  String? name;
+  String? description;
  // List<String> images;
-  bool inFavorites;
-  bool inCart;
+  bool? inFavorites;
+  bool? inCart;
 
 
   ProductByCategoryData.fromJson(Map<String, dynamic> json) {

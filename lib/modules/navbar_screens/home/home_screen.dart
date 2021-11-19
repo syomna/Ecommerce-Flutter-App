@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,21 +18,21 @@ class HomeScreen extends StatelessWidget {
     return BlocConsumer<HomeCubit, HomeStates>(
       listener: (context, state) {
         if (state is HomeChangeFavoritesSuccessState) {
-          if (!state.model.status) {
+          if (!state.model!.status!) {
             showToast(
-                toastText: state.model.message, toastColor: ToastColor.ERROR);
+                toastText: state.model!.message, toastColor: ToastColor.ERROR);
           } else {
             showToast(
-                toastText: state.model.message, toastColor: ToastColor.SUCESS);
+                toastText: state.model?.message, toastColor: ToastColor.SUCESS);
           }
         }
         if (state is HomeChangeCartSuccessState) {
-          if (!state.model.status) {
+          if (!state.model!.status!) {
             showToast(
-                toastText: state.model.message, toastColor: ToastColor.ERROR);
+                toastText: state.model?.message, toastColor: ToastColor.ERROR);
           } else {
             showToast(
-                toastText: state.model.message, toastColor: ToastColor.SUCESS);
+                toastText: state.model?.message, toastColor: ToastColor.SUCESS);
           }
         }
       },
@@ -43,7 +44,7 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               buildCarouselSlider(cubit, context),
-            const  SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               buildCustomText('Categories', context,
@@ -52,13 +53,13 @@ class HomeScreen extends StatelessWidget {
                 height: MediaQuery.of(context).size.height * 0.15,
                 child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: cubit.categories.length,
+                    itemCount: cubit.categories!.length,
                     itemBuilder: (context, index) {
                       return categoriesContainer(
-                          cubit.categories[index], cubit, context);
+                          cubit.categories![index], cubit, context);
                     }),
               ),
-             const SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               buildCustomText('Products', context,
@@ -69,9 +70,9 @@ class HomeScreen extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2, childAspectRatio: 1.4),
-                      itemCount: cubit.products.length,
+                      itemCount: cubit.products!.length,
                       itemBuilder: (context, index) => buildGridItems(
-                          cubit.products[index], context, cubit)))
+                          cubit.products![index], context, cubit)))
             ],
           ),
         );
@@ -88,12 +89,12 @@ class HomeScreen extends StatelessWidget {
             text,
             style: Theme.of(context)
                 .textTheme
-                .headline5
+                .headline5!
                 .copyWith(fontWeight: FontWeight.bold),
           ),
           Spacer(),
           TextButton(
-              onPressed: onPressed,
+              onPressed: onPressed as void Function()?,
               child: Text(
                 'view all'.toUpperCase(),
                 style:
@@ -106,11 +107,19 @@ class HomeScreen extends StatelessWidget {
 
   Widget buildCarouselSlider(HomeCubit cubit, BuildContext context) {
     return CarouselSlider(
-      items: cubit.banners
+      items: cubit.banners!
           .map((e) => Padding(
                 padding: const EdgeInsets.all(8.0),
-                child:
-                    Image(fit: BoxFit.fill, image: NetworkImage('${e.image}')),
+                child: CachedNetworkImage(
+                  fit: BoxFit.fill,
+                  imageUrl: '${e.image}',
+                  progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      Center(
+                        child: CircularProgressIndicator(
+                            value: downloadProgress.progress),
+                      ),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                ),
               ))
           .toList(),
       options: CarouselOptions(

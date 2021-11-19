@@ -23,10 +23,10 @@ class OrdersScreen extends StatelessWidget {
           body: Padding(
               padding: const EdgeInsets.all(10.0),
               child: ListView.builder(
-                  itemCount: cubit.orderModel.data.data.length,
+                  itemCount: cubit.orderModel.data!.data.length,
                   itemBuilder: (context, index) {
                     return buildOrderCard(
-                        cubit.orderModel.data.data[index], cubit, context);
+                        cubit.orderModel.data!.data[index], cubit, context);
                   })),
         );
       },

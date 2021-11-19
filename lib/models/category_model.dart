@@ -1,6 +1,6 @@
 class Categories {
-  bool status;
-  Data data;
+  bool? status;
+  Data? data;
 
   Categories.fromJson(Map<String, dynamic> json) {
     status = json['status'];
@@ -9,22 +9,22 @@ class Categories {
 }
 
 class Data {
-  List<CategoryData> data;
+  List<CategoryData>? data;
   
   Data.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
       data = [];
       json['data'].forEach((v) {
-        data.add( CategoryData.fromJson(v));
+        data!.add( CategoryData.fromJson(v));
       });
     }
   }
 }
 
 class CategoryData {
-  int id;
-  String name;
-  String image;
+  int? id;
+  String? name;
+  String? image;
 
   CategoryData.fromJson(Map<String, dynamic> json) {
     id = json['id'];

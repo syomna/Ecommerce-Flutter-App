@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,21 +22,33 @@ class LoginCubit extends Cubit<LoginStates> {
     emit(LoginChangePasswordVisibilityState());
   }
 
-  UserModel userModel;
+  UserModel? userModel;
 
-  void userLogin({@required String email, @required String password}) async {
+  void userLogin({required String email, required String password}) async {
     emit(LoginLoadingState());
-    await DioHelper.postData(
-        url: kLogin,
-        data: {'email': email, 'password': password}).then((value) {
-      print(value.data);
-      userModel = UserModel.fromJson(value.data);
-      token = userModel.data.token;
+    try {
+     Response response = await DioHelper.postData(
+          url: kLogin, data: {'email': email, 'password': password});
+        print(response.data);
+      userModel = UserModel.fromJson(response.data);
+      token = userModel?.data?.token;
       print(token);
       emit(LoginSuccessState(userModel));
-    }).catchError((error) {
-      print(error.toString());
-      emit(LoginErrorState(error));
-    });
+    } catch (error) {
+       print(error.toString());
+      emit(LoginErrorState(error.toString()));
+    }
+    // await DioHelper.postData(
+    //     url: kLogin,
+    //     data: {'email': email, 'password': password}).then((value) {
+    //   print(value.data);
+    //   userModel = UserModel.fromJson(value.data);
+    //   token = userModel!.data!.token;
+    //   print(token);
+    //   emit(LoginSuccessState(userModel));
+    // }).catchError((error) {
+    //   print(error.toString());
+    //   emit(LoginErrorState(error));
+    // });
   }
 }

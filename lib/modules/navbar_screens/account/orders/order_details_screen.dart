@@ -30,7 +30,7 @@ class OrderDetailsScreen extends StatelessWidget {
                       height: 15.0,
                     ),
                     buildAddressCard(
-                        cubit.orderDetailsModel.data.address, context),
+                        cubit.orderDetailsModel.data!.address, context),
                     Container(
                       height: MediaQuery.of(context).size.height * 0.7,
                       child: GridView.builder(
@@ -38,12 +38,12 @@ class OrderDetailsScreen extends StatelessWidget {
                               SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 2, childAspectRatio: 0.65),
                           itemCount:
-                              cubit.orderDetailsModel.data.products.length,
+                              cubit.orderDetailsModel.data!.products.length,
                           itemBuilder: (context, index) {
                             return Padding(
                               padding: const EdgeInsets.only(top: 15.0),
                               child: buildOrderProductsDetails(
-                                  cubit.orderDetailsModel.data.products[index],
+                                  cubit.orderDetailsModel.data!.products[index],
                                   context),
                             );
                           }),
@@ -64,12 +64,12 @@ class OrderDetailsScreen extends StatelessWidget {
             'Your Cost : ',
             style: Theme.of(context)
                 .textTheme
-                .headline6
+                .headline6!
                 .copyWith(fontWeight: FontWeight.bold),
           ),
           Spacer(),
           Text(
-            '${kFormatCurrency.format(cubit.orderDetailsModel.data.total)}',
+            '${kFormatCurrency.format(cubit.orderDetailsModel.data!.total)}',
             style: Theme.of(context).textTheme.bodyText1,
           )
         ],
@@ -85,7 +85,7 @@ class OrderDetailsScreen extends StatelessWidget {
           child: Text('Delivered to',
               style: Theme.of(context)
                   .textTheme
-                  .headline6
+                  .headline6!
                   .copyWith(fontWeight: FontWeight.bold)),
         ),
         ListTile(
@@ -107,7 +107,7 @@ class OrderDetailsScreen extends StatelessWidget {
           'Quantity : ${product.quantity}',
           style: Theme.of(context)
               .textTheme
-              .bodyText2
+              .bodyText2!
               .copyWith(fontWeight: FontWeight.bold),
         ),
         Card(
@@ -116,6 +116,9 @@ class OrderDetailsScreen extends StatelessWidget {
             child: Column(
               children: [
                 Image(
+                  errorBuilder:
+                      (BuildContext context, Object child, StackTrace? trace) =>
+                          Icon(Icons.broken_image),
                   height: MediaQuery.of(context).size.height * 0.2,
                   image: NetworkImage('${product.image}'),
                 ),
@@ -125,12 +128,12 @@ class OrderDetailsScreen extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context)
                       .textTheme
-                      .bodyText2
+                      .bodyText2!
                       .copyWith(fontWeight: FontWeight.bold),
                 ),
                 Text(
                   '${kFormatCurrency.format(product.price)}',
-                  style: Theme.of(context).textTheme.bodyText2.copyWith(
+                  style: Theme.of(context).textTheme.bodyText2!.copyWith(
                       fontWeight: FontWeight.bold, color: defaultColor),
                 )
               ],

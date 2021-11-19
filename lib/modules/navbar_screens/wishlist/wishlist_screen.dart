@@ -17,12 +17,22 @@ class WishListScreen extends StatelessWidget {
       },
       builder: (context, state) {
         var cubit = HomeCubit.get(context);
-        return ListView.builder(
-            itemCount: cubit.favoriteModel.data.data.length,
+        if (cubit.favoriteModel.data!.data.isEmpty) {
+          return Center(
+            child: Text('No Favorites' , style: Theme.of(context).textTheme.bodyText1,),
+          );
+        }
+        return ListView.separated(
+          separatorBuilder: (context , index) => const Divider(
+           
+          ),
+            itemCount: cubit.favoriteModel.data!.data.length,
             itemBuilder: (context, index) {
-              print(cubit.favoriteModel.data.data.length);
+              print(cubit.favoriteModel.data?.data.length);
               return buildListViewItems(
-                  cubit.favoriteModel.data.data[index].product, context, cubit);
+                  cubit.favoriteModel.data?.data[index].product,
+                  context,
+                  cubit);
             });
       },
     );

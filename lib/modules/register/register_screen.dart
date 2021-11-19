@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shop/layouts/home_layout.dart';
 import 'package:shop/modules/register/cubit/register_cubit.dart';
 import 'package:shop/modules/register/cubit/register_states.dart';
@@ -15,11 +14,10 @@ class RegisterScreen extends StatelessWidget {
   final phoneController = TextEditingController();
   final nameController = TextEditingController();
   final formKey = GlobalKey<FormState>();
-  
 
-  void _register(cubit) {
-    if (formKey.currentState.validate()) {
-      cubit.userRegister(
+  void _register(cubit) async {
+    if (formKey.currentState!.validate()) {
+     await cubit.userRegister(
           email: emailController.text.trim(),
           password: passwordController.text.trim(),
           name: nameController.text.trim(),
@@ -36,22 +34,22 @@ class RegisterScreen extends StatelessWidget {
           showToast(
               toastText: state.error.toString(), toastColor: ToastColor.ERROR);
         } else if (state is RegisterSuccessState) {
-          if (state.userModel.status) {
+          if (state.userModel!.status!) {
             showToast(
-                    toastText: state.userModel.message,
+                    toastText: state.userModel!.message,
                     toastColor: ToastColor.SUCESS)
                 .then((value) {
               CacheHelper.setData(
-                      key: 'token', value: state.userModel.data.token)
+                      key: 'token', value: state.userModel!.data!.token)
                   .then((value) {
-                    token = state.userModel.data.token;
+                token = state.userModel!.data!.token;
                 navigateAndReplacment(context, HomeLayout());
               });
             });
-            print(state.userModel.data.token);
+            print(state.userModel!.data!.token);
           } else {
             showToast(
-                toastText: state.userModel.message,
+                toastText: state.userModel!.message,
                 toastColor: ToastColor.ERROR);
           }
         }
@@ -59,7 +57,9 @@ class RegisterScreen extends StatelessWidget {
       builder: (context, state) {
         var cubit = RegisterCubit.get(context);
         return Scaffold(
-          appBar: AppBar(),
+          appBar: AppBar(
+            iconTheme: IconThemeData(color: Colors.black),
+          ),
           body: Padding(
             padding: const EdgeInsets.all(15.0),
             child: SingleChildScrollView(
@@ -70,18 +70,20 @@ class RegisterScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Create account,',
-                      style: Theme.of(context).textTheme.headline4.copyWith(
-                          color: defaultColor, fontWeight: FontWeight.bold),
+                      'Sign Up for a new account,',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline4!
+                          .copyWith(fontWeight: FontWeight.bold),
                     ),
                     Text(
                       'Register to get started!',
                       style: Theme.of(context)
                           .textTheme
-                          .headline6
+                          .headline6!
                           .copyWith(color: Colors.grey),
                     ),
-                  const  SizedBox(
+                    const SizedBox(
                       height: 30,
                     ),
                     defaultTextField(
@@ -95,8 +97,8 @@ class RegisterScreen extends StatelessWidget {
                       },
                       keyboardType: TextInputType.name,
                     ),
-                  const  SizedBox(
-                      height: 20,
+                    const SizedBox(
+                      height: 10,
                     ),
                     defaultTextField(
                       label: 'Email',
@@ -109,8 +111,8 @@ class RegisterScreen extends StatelessWidget {
                       },
                       keyboardType: TextInputType.emailAddress,
                     ),
-                  const  SizedBox(
-                      height: 20,
+                    const SizedBox(
+                      height: 10,
                     ),
                     defaultTextField(
                       label: 'Phone',
@@ -123,8 +125,8 @@ class RegisterScreen extends StatelessWidget {
                       },
                       keyboardType: TextInputType.phone,
                     ),
-                  const  SizedBox(
-                      height: 20,
+                    const SizedBox(
+                      height: 10,
                     ),
                     defaultTextField(
                         label: 'Password',
@@ -142,14 +144,14 @@ class RegisterScreen extends StatelessWidget {
                         },
                         onIconPressed: cubit.changePasswordVisibility,
                         keyboardType: TextInputType.number),
-                  const  SizedBox(
+                    const SizedBox(
                       height: 30,
                     ),
                     state is RegisterLoadingState
                         ? Center(child: CircularProgressIndicator())
                         : defaultButton('Register'.toUpperCase(), () {
                             _register(cubit);
-                          } , context),
+                          }, context),
                   ],
                 ),
               ),

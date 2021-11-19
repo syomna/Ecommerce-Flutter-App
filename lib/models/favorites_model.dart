@@ -1,7 +1,7 @@
 class FavoriteModel {
-  bool status;
+  bool? status;
   Null message;
-  Data data;
+  Data? data;
 
   FavoriteModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
@@ -12,7 +12,7 @@ class FavoriteModel {
 }
 
 class Data {
-  List<FavoriteData> data;
+  late List<FavoriteData> data;
 
   Data.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
@@ -26,8 +26,8 @@ class Data {
 }
 
 class FavoriteData {
-  int id;
-  FavoriteProduct product;
+  int? id;
+  FavoriteProduct? product;
 
   FavoriteData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -37,13 +37,13 @@ class FavoriteData {
 }
 
 class FavoriteProduct {
-  int id;
-  int price;
-  int oldPrice;
-  int discount;
-  String image;
-  String name;
-  String description;
+  int? id;
+  int? price;
+  int? oldPrice;
+  int? discount;
+  String? image;
+  String? name;
+  String? description;
 
   FavoriteProduct.fromJson(Map<String, dynamic> json) {
     id = json['id'];

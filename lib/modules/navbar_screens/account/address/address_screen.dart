@@ -1,4 +1,4 @@
-import 'package:conditional/conditional.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop/models/address_model.dart';
@@ -15,13 +15,13 @@ class AddressSreen extends StatelessWidget {
     return BlocConsumer<HomeCubit, HomeStates>(
       listener: (context, state) {
         if (state is HomeDeleteAddressSuccess) {
-          if (!state.deleteAddressModel.status) {
+          if (!state.deleteAddressModel!.status!) {
             showToast(
-                toastText: state.deleteAddressModel.message,
+                toastText: state.deleteAddressModel!.message,
                 toastColor: ToastColor.ERROR);
           } else {
             showToast(
-                toastText: state.deleteAddressModel.message,
+                toastText: state.deleteAddressModel!.message,
                 toastColor: ToastColor.SUCESS);
           }
         }
@@ -43,29 +43,27 @@ class AddressSreen extends StatelessWidget {
           ),
           body: Padding(
               padding: const EdgeInsets.all(10.0),
-              child: Conditional(
-                condition: cubit.addressModel.data.data.isEmpty,
-                onConditionTrue: Center(
+              child:
+              cubit.addressModel.data!.data.isEmpty ? Center(
                   child: Text(
                     'Add your address',
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
-                ),
-                onConditionFalse: ListView.separated(
+                ) : ListView.separated(
                     separatorBuilder: (context, index) {
                       return const SizedBox(
                         height: 10.0,
                       );
                     },
-                    itemCount: cubit.addressModel.data.data.length,
+                    itemCount: cubit.addressModel.data!.data.length,
                     itemBuilder: (context, index) {
                       return buildAddressBody(
-                          cubit.addressModel.data.data[index],
+                          cubit.addressModel.data!.data[index],
                           cubit,
                           index,
                           context);
                     }),
-              )),
+              ),
         );
       },
     );
@@ -75,7 +73,7 @@ class AddressSreen extends StatelessWidget {
       AddressData addressData, HomeCubit cubit, int index, context) {
     return Dismissible(
       direction: DismissDirection.startToEnd,
-      key: ObjectKey(cubit.addressModel.data.data[index]),
+      key: ObjectKey(cubit.addressModel.data!.data[index]),
       background: Container(
         padding: const EdgeInsets.only(left: 20.0),
         alignment: Alignment.centerLeft,
@@ -87,7 +85,7 @@ class AddressSreen extends StatelessWidget {
         ),
       ),
       onDismissed: (direction) {
-        cubit.addressModel.data.data.removeAt(index);
+        cubit.addressModel.data!.data.removeAt(index);
         cubit.deleteUserAddress(addressId: addressData.id);
       },
       child: Card(
@@ -97,7 +95,7 @@ class AddressSreen extends StatelessWidget {
             color: defaultColor,
           ),
           title: Text(
-            '${addressData.name.toUpperCase()}',
+            '${addressData.name!.toUpperCase()}',
             style: Theme.of(context).textTheme.bodyText1,
           ),
           subtitle: Text(

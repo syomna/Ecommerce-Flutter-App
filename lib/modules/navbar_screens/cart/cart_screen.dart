@@ -1,14 +1,11 @@
-import 'package:conditional/conditional.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:shop/models/cart_model.dart';
 import 'package:shop/modules/navbar_screens/cart/check_order_screen.dart';
 import 'package:shop/modules/navbar_screens/cubit/home_cubit.dart';
 import 'package:shop/modules/navbar_screens/cubit/home_states.dart';
 import 'package:shop/modules/navbar_screens/products/product_details_screen.dart';
 import 'package:shop/shared/components/components.dart';
-import 'package:shop/shared/network/local/cache_helper.dart';
 import 'package:shop/shared/styles/themes.dart';
 
 class CartScreen extends StatelessWidget {
@@ -17,23 +14,23 @@ class CartScreen extends StatelessWidget {
     return BlocConsumer<HomeCubit, HomeStates>(
       listener: (context, state) {
         if (state is HomeUpdateCartSuccessState) {
-          if (!state.model.status) {
+          if (!state.model!.status!) {
             showToast(
-                toastText: state.model.message, toastColor: ToastColor.ERROR);
+                toastText: state.model!.message, toastColor: ToastColor.ERROR);
           } else {
             showToast(
-                toastText: state.model.message, toastColor: ToastColor.SUCESS);
+                toastText: state.model!.message, toastColor: ToastColor.SUCESS);
           }
         }
 
         if (state is HomeDeleteCartSuccessState) {
-          if (!state.deleteCartModel.status) {
+          if (!state.deleteCartModel!.status!) {
             showToast(
-                toastText: state.deleteCartModel.message,
+                toastText: state.deleteCartModel!.message,
                 toastColor: ToastColor.ERROR);
           } else {
             showToast(
-                toastText: state.deleteCartModel.message,
+                toastText: state.deleteCartModel!.message,
                 toastColor: ToastColor.SUCESS);
           }
         }
@@ -53,26 +50,25 @@ class CartScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                    height: MediaQuery.of(context).size.height * 0.7,
-                    child: Conditional(
-                      condition: cubit.cartModel.data.cartItems.isEmpty,
-                      onConditionTrue: buildEmptyCart(context),
-                      onConditionFalse: ListView.builder(
-                          itemCount: cubit.cartModel.data.cartItems.length,
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: cubit.cartModel!.data!.cartItems.isEmpty
+                      ? buildEmptyCart(context)
+                      : ListView.builder(
+                          itemCount: cubit.cartModel!.data?.cartItems.length,
                           itemBuilder: (context, index) {
                             return Container(
                                 height:
                                     MediaQuery.of(context).size.height * 0.25,
                                 padding: const EdgeInsets.all(10.0),
                                 child: buildcartItem(
-                                    cubit.cartModel.data.cartItems[index],
+                                    cubit.cartModel!.data!.cartItems[index],
                                     cubit,
                                     index,
                                     context));
                           }),
-                    )),
+                ),
                 Text(
-                  'your total: ${kFormatCurrency.format(cubit.cartModel.data.total)}'
+                  'your total: ${kFormatCurrency.format(cubit.cartModel!.data!.total)}'
                       .toUpperCase(),
                   style: Theme.of(context).textTheme.bodyText1,
                 ),
@@ -124,7 +120,7 @@ class CartScreen extends StatelessWidget {
       },
       child: InkWell(
         onTap: () {
-          cubit.getProductsDetails(model.cartProduct.id).then((value) {
+          cubit.getProductsDetails(model.cartProduct!.id).then((value) {
             navigateTo(context, ProductDetailsScreen());
           });
         },
@@ -133,7 +129,7 @@ class CartScreen extends StatelessWidget {
             Expanded(
               flex: 1,
               child: Image(
-                image: NetworkImage('${model.cartProduct.image}'),
+                image: NetworkImage('${model.cartProduct!.image}'),
               ),
             ),
             const SizedBox(
@@ -145,22 +141,22 @@ class CartScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${model.cartProduct.name}',
+                    '${model.cartProduct!.name}',
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   Spacer(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      model.cartProduct.discount != 0
+                      model.cartProduct!.discount != 0
                           ? Text(
-                              '${model.cartProduct.oldPrice} ',
+                              '${model.cartProduct!.oldPrice} ',
                               style: TextStyle(
                                   decoration: TextDecoration.lineThrough),
                             )
                           : Container(),
                       Text(
-                        '${kFormatCurrency.format(model.cartProduct.price)}',
+                        '${kFormatCurrency.format(model.cartProduct!.price)}',
                         style: TextStyle(
                             color: defaultColor, fontWeight: FontWeight.bold),
                       ),
@@ -208,7 +204,7 @@ class CartScreen extends StatelessWidget {
       minWidth: 15,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Icon(icon, color: Colors.white),
-      onPressed: onPressed,
+      onPressed: onPressed as void Function()?,
     );
   }
 }

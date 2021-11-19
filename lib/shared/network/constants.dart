@@ -26,6 +26,6 @@ const String kGetProductDetails = 'products/';
 
 const String kLogout = 'logout';
 
-String token;
+String? token;
 
-int kCartLength;
+int? kCartLength;

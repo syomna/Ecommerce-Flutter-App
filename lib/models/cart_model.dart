@@ -1,6 +1,6 @@
 class CartModel {
-  bool status;
-  Data data;
+  bool? status;
+  Data? data;
 
   CartModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
@@ -10,7 +10,7 @@ class CartModel {
 }
 
 class Data {
-  List<CartItems> cartItems;
+  late List<CartItems> cartItems;
   dynamic subTotal;
   dynamic total;
 
@@ -29,9 +29,9 @@ class Data {
 }
 
 class CartItems {
-  int id;
-  int quantity;
-  CartProduct cartProduct;
+  int? id;
+  int? quantity;
+  CartProduct? cartProduct;
 
   CartItems.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -43,16 +43,16 @@ class CartItems {
 }
 
 class CartProduct {
-  int id;
+  int? id;
   dynamic price;
   dynamic oldPrice;
-  int discount;
-  String image;
-  String name;
-  String description;
-  List<String> images;
-  bool inFavorites;
-  bool inCart;
+  int? discount;
+  String? image;
+  String? name;
+  String? description;
+  List<String>? images;
+  bool? inFavorites;
+  bool? inCart;
 
   CartProduct.fromJson(Map<String, dynamic> json) {
     id = json['id'];

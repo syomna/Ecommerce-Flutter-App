@@ -1,6 +1,6 @@
 class UpdateCartModel {
-  bool status;
-  String message;
+  bool? status;
+  String? message;
 
 
   UpdateCartModel.fromJson(Map<String, dynamic> json) {

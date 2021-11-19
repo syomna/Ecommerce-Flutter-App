@@ -1,7 +1,7 @@
 class UserModel {
-  bool status;
-  String message;
-  UserData data;
+  bool? status;
+  String? message;
+  UserData? data;
 
   UserModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
@@ -11,15 +11,15 @@ class UserModel {
 }
 
 class UserData {
-  int id;
-  String name;
-  String email;
-  String phone;
-  String image;
-  String password;
+  int? id;
+  String? name;
+  String? email;
+  String? phone;
+  String? image;
+  String? password;
   dynamic points;
   dynamic credit;
-  String token;
+  String? token;
 
   UserData.fromJson(Map<String, dynamic> json) {
     id = json['id'];

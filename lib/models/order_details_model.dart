@@ -1,7 +1,7 @@
 class OrderDetailsModel {
-  bool status;
+  bool? status;
   Null message;
-  Data data;
+  Data? data;
 
   OrderDetailsModel({this.status, this.message, this.data});
 
@@ -13,19 +13,19 @@ class OrderDetailsModel {
 }
 
 class Data {
-  int id;
+  int? id;
   dynamic cost;
-  int discount;
+  int? discount;
   dynamic points;
   dynamic vat;
   dynamic total;
   dynamic pointsCommission;
-  String promoCode;
-  String paymentMethod;
-  String date;
-  String status;
-  OrderAddress address;
-  List<OrderProducts> products;
+  String? promoCode;
+  String? paymentMethod;
+  String? date;
+  String? status;
+  OrderAddress? address;
+  late List<OrderProducts> products;
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -52,12 +52,12 @@ class Data {
 }
 
 class OrderAddress {
-  int id;
-  String name;
-  String city;
-  String region;
-  String details;
-  String notes;
+  int? id;
+  String? name;
+  String? city;
+  String? region;
+  String? details;
+  String? notes;
   dynamic latitude;
   dynamic longitude;
 
@@ -74,11 +74,11 @@ class OrderAddress {
 }
 
 class OrderProducts {
-  int id;
-  int quantity;
+  int? id;
+  int? quantity;
   dynamic price;
-  String name;
-  String image;
+  String? name;
+  String? image;
 
   OrderProducts.fromJson(Map<String, dynamic> json) {
     id = json['id'];

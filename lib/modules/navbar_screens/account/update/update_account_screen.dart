@@ -5,10 +5,10 @@ import 'package:shop/modules/navbar_screens/cubit/home_states.dart';
 import 'package:shop/shared/components/components.dart';
 
 class UpdateAccountScreen extends StatelessWidget {
-  var nameController = TextEditingController();
-  var emailController = TextEditingController();
-  var phoneController = TextEditingController();
-  var formKey = GlobalKey<FormState>();
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<HomeCubit, HomeStates>(
@@ -24,9 +24,9 @@ class UpdateAccountScreen extends StatelessWidget {
       },
       builder: (context, state) {
         var cubit = HomeCubit.get(context);
-        nameController.text = cubit.userModel.data.name;
-        emailController.text = cubit.userModel.data.email;
-        phoneController.text = cubit.userModel.data.phone;
+        nameController.text = cubit.userModel.data!.name!;
+        emailController.text = cubit.userModel.data!.email!;
+        phoneController.text = cubit.userModel.data!.phone!;
         if (cubit.userModel.data == null) {
           return Center(
             child: CircularProgressIndicator(),
@@ -102,8 +102,8 @@ class UpdateAccountScreen extends StatelessWidget {
                               child: CircularProgressIndicator(),
                             )
                           : defaultButton('Update', () {
-                              if (formKey.currentState.validate()) {
-                                print(cubit.userModel.data.image);
+                              if (formKey.currentState!.validate()) {
+                                print(cubit.userModel.data!.image);
                                 cubit.updateProfile(
                                   name: nameController.text,
                                   email: emailController.text.trim(),

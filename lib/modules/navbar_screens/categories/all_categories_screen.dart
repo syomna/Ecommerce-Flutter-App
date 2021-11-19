@@ -11,6 +11,10 @@ class AllCategoriesScreen extends StatelessWidget {
       listener: (context, state) {},
       builder: (context, state) {
         var cubit = HomeCubit.get(context);
+        if (state is HomeGetProductsByCategoryLoadingState)
+          Center(
+            child: CircularProgressIndicator(),
+          );
         return Scaffold(
             appBar: AppBar(
               title: Text(
@@ -24,12 +28,12 @@ class AllCategoriesScreen extends StatelessWidget {
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3),
                   scrollDirection: Axis.vertical,
-                  itemCount: cubit.categories.length,
+                  itemCount: cubit.categories!.length,
                   itemBuilder: (context, index) {
                     return Container(
                       height: MediaQuery.of(context).size.height * 0.2,
                       child: categoriesContainer(
-                          cubit.categories[index], cubit, context),
+                          cubit.categories![index], cubit, context),
                     );
                   }),
             ));

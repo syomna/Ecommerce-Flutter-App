@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop/models/user_model.dart';
@@ -20,27 +21,47 @@ class RegisterCubit extends Cubit<RegisterStates> {
     emit(RegisterChangePasswordVisibilityState());
   }
 
-  UserModel userModel;
+  UserModel? userModel;
 
   void userRegister(
-      {@required String email,
-      @required String password,
-      @required String name,
-      @required String phone}) async {
+      {required String email,
+      required String password,
+      required String name,
+      required String phone}) async {
     emit(RegisterLoadingState());
-    await DioHelper.postData(url: kRegister, data: {
-      'email': email,
-      'password': password,
-      'phone': phone,
-      'name': name
-    }).then((value) {
-      print(value.data);
-      userModel = UserModel.fromJson(value.data);
-      token = userModel.data.token;
-      emit(RegisterSuccessState(userModel));
-    }).catchError((error) {
+    try {
+      Response response = await DioHelper.postData(url: kRegister, data: {
+        'email': email,
+        'password': password,
+        'phone': phone,
+        'name': name
+      });
+      if(response.statusCode != 200){
+        print(response.statusMessage);
+        emit(RegisterErrorState(response.statusMessage!));
+      }
+    
+        print(response.data);
+        userModel = UserModel.fromJson(response.data);
+        token = userModel?.data?.token;
+      
+    } catch (error) {
       print(error.toString());
-      emit(RegisterErrorState(error));
-    });
+      emit(RegisterErrorState(error.toString()));
+    }
+    //   await DioHelper.postData(url: kRegister, data: {
+    //     'email': email,
+    //     'password': password,
+    //     'phone': phone,
+    //     'name': name
+    //   }).then((value) {
+    //     print(value.data);
+    //     userModel = UserModel.fromJson(value.data);
+    //     token = userModel!.data!.token;
+    //     emit(RegisterSuccessState(userModel));
+    //   }).catchError((error) {
+    //     print(error.toString());
+    //     emit(RegisterErrorState(error));
+    //   });
   }
 }
