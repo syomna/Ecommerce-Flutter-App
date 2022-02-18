@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-const Color defaultColor = Color(0xFFff619b);
+const Color kDefaultColor = Color(0xFFFFDE59);
+
+TextStyle appBarStyle(context) => Theme.of(context)
+    .textTheme
+    .headline6!.copyWith(fontWeight: FontWeight.bold);
 
 ThemeData lightTheme = ThemeData(
     fontFamily: 'Koho',
@@ -12,13 +16,13 @@ ThemeData lightTheme = ThemeData(
     textTheme: TextTheme(
       headline4: TextStyle(color: Colors.black),
         bodyText1: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
-    primarySwatch: Colors.pink,
-    primaryColor: defaultColor,
+    primarySwatch: Colors.amber,
+    primaryColor: kDefaultColor,
     scaffoldBackgroundColor: Colors.white,
     appBarTheme: AppBarTheme(
-      iconTheme: IconThemeData(color: defaultColor),
+      iconTheme: IconThemeData(color: kDefaultColor),
       systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: defaultColor, systemNavigationBarColor: defaultColor),
+          statusBarColor: kDefaultColor, systemNavigationBarColor: kDefaultColor),
       backgroundColor: Colors.white,
       elevation: 0.0,
     ));

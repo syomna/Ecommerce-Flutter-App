@@ -10,7 +10,7 @@ class CartModel {
 }
 
 class Data {
-  late List<CartItems> cartItems;
+ List<CartItems>? cartItems;
   dynamic subTotal;
   dynamic total;
 
@@ -19,7 +19,7 @@ class Data {
     if (json['cart_items'] != null) {
       cartItems = [];
       json['cart_items'].forEach((v) {
-        cartItems.add(new CartItems.fromJson(v));
+        cartItems?.add(new CartItems.fromJson(v));
       });
     }
     subTotal = json['sub_total'];

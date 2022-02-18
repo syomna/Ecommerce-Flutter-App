@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_cubit.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_states.dart';
-import 'package:shop/shared/components/components.dart';
+import 'package:shop/shared/blocs/home_cubit/home_cubit.dart';
+import 'package:shop/shared/blocs/home_cubit/home_states.dart';
+import 'package:shop/shared/styles/themes.dart';
+import 'package:shop/shared/widgets/export_widget.dart';
 
 class AllProductsScreen extends StatelessWidget {
   @override
@@ -33,8 +34,8 @@ class AllProductsScreen extends StatelessWidget {
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2, childAspectRatio: 0.6),
                       itemCount: cubit.products!.length,
-                      itemBuilder: (context, index) => buildGridItems(
-                          cubit.products![index], context, cubit))),
+                      itemBuilder: (context, index) => BuildGridItems(
+                         model : cubit.products![index], cubit : cubit))),
         );
       },
     );

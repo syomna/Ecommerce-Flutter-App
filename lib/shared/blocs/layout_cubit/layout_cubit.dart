@@ -2,11 +2,11 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shop/layouts/cubit/layout_states.dart';
 import 'package:shop/modules/navbar_screens/account/account_screen.dart';
 import 'package:shop/modules/navbar_screens/home/home_screen.dart';
 import 'package:shop/modules/navbar_screens/search/search_screen.dart';
 import 'package:shop/modules/navbar_screens/wishlist/wishlist_screen.dart';
+import 'package:shop/shared/blocs/layout_cubit/layout_states.dart';
 import 'package:shop/shared/network/local/cache_helper.dart';
 
 class LayoutCubit extends Cubit<LayoutStates> {

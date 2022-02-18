@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop/modules/navbar_screens/account/address/address_screen.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_cubit.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_states.dart';
+import 'package:shop/shared/blocs/home_cubit/home_cubit.dart';
+import 'package:shop/shared/blocs/home_cubit/home_states.dart';
 import 'package:shop/shared/components/components.dart';
 import 'package:shop/shared/styles/themes.dart';
+import 'package:shop/shared/widgets/export_widget.dart';
 
-class AddAddressScreen extends StatelessWidget {
+class AddAddressScreen extends StatefulWidget {
+  @override
+  State<AddAddressScreen> createState() => _AddAddressScreenState();
+}
+
+class _AddAddressScreenState extends State<AddAddressScreen> {
   final cityController = TextEditingController();
 
   final regionController = TextEditingController();
@@ -20,6 +26,17 @@ class AddAddressScreen extends StatelessWidget {
   final longitudeController = TextEditingController();
 
   final formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    cityController.dispose();
+    regionController.dispose();
+    detailsController.dispose();
+    notesController.dispose();
+    latitudeController.dispose();
+    longitudeController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +65,7 @@ class AddAddressScreen extends StatelessWidget {
       },
       builder: (context, state) {
         var cubit = HomeCubit.get(context);
-       
+
         return Scaffold(
           appBar: AppBar(
             title: Text(
@@ -75,21 +92,19 @@ class AddAddressScreen extends StatelessWidget {
                     const SizedBox(
                       height: 20.0,
                     ),
-                  
                     const SizedBox(
                       height: 10.0,
                     ),
-                    defaultTextField(
+                    DefaultTextFormField(
                       label: 'notes',
                       controller: notesController,
                       prefixIcon: Icons.book,
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value!.isEmpty) {
                           return 'Please type some notes';
                         }
                       },
                     ),
-               
                     const SizedBox(
                       height: 20.0,
                     ),
@@ -97,31 +112,11 @@ class AddAddressScreen extends StatelessWidget {
                         ? Center(
                             child: CircularProgressIndicator(),
                           )
-                        : defaultButton('Save Address', () {
-                            if (formKey.currentState!.validate()) {
-                              if (cubit.address != null) {
-                                cubit
-                                    .postAddress(
-                                        name: cubit.radioValue,
-                                        city: cubit.address!.administrativeArea!,
-                                        region: cubit.address!.locality!,
-                                        details: cubit.address!.street!,
-                                        notes: notesController.text,
-                                        latitude:
-                                            cubit.position?.latitude,
-                                        longitude:
-                                            cubit.position?.longitude)
-                                    .then((value) {
-                                  navigateAndReplacment(
-                                      context, AddressSreen());
-                                });
-                              } else {
-                                showToast(
-                                    toastText: 'pick your address location',
-                                    toastColor: ToastColor.ERROR);
-                              }
-                            }
-                          }, context)
+                        : DefaultButton(
+                            buttonText: 'Save Address',
+                            onPressed: () {
+                              _saveAddress(cubit);
+                            })
                   ],
                 ),
               ),
@@ -162,11 +157,34 @@ class AddAddressScreen extends StatelessWidget {
     );
   }
 
-  _pickCurrentLocationButton(HomeCubit cubit, context) {
+  void _saveAddress(HomeCubit cubit) {
+    if (formKey.currentState!.validate()) {
+      if (cubit.address != null) {
+        cubit
+            .postAddress(
+                name: cubit.radioValue,
+                city: cubit.address!.administrativeArea!,
+                region: cubit.address!.locality!,
+                details: cubit.address!.street!,
+                notes: notesController.text,
+                latitude: cubit.position?.latitude,
+                longitude: cubit.position?.longitude)
+            .then((value) {
+          navigateAndRemove(context, AddressSreen());
+        });
+      } else {
+        showToast(
+            toastText: 'pick your address location',
+            toastColor: ToastColor.ERROR);
+      }
+    }
+  }
+
+  Widget _pickCurrentLocationButton(HomeCubit cubit, context) {
     return MaterialButton(
       minWidth: double.infinity,
       shape: RoundedRectangleBorder(
-          side: BorderSide(color: defaultColor, width: 1.5),
+          side: BorderSide(color: kDefaultColor, width: 1.5),
           borderRadius: BorderRadius.circular(20)),
       child: ListTile(
         title: Text(
@@ -175,7 +193,7 @@ class AddAddressScreen extends StatelessWidget {
         ),
         leading: Icon(
           Icons.location_on,
-          color: defaultColor,
+          color: kDefaultColor,
         ),
       ),
       onPressed: () async {

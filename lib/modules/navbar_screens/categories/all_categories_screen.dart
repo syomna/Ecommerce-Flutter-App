@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_cubit.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_states.dart';
+import 'package:shop/modules/navbar_screens/products/product_by_category_screen.dart';
+import 'package:shop/shared/blocs/home_cubit/home_cubit.dart';
+import 'package:shop/shared/blocs/home_cubit/home_states.dart';
 import 'package:shop/shared/components/components.dart';
+import 'package:shop/shared/styles/themes.dart';
+import 'package:shop/widgets/export_widgets.dart';
 
 class AllCategoriesScreen extends StatelessWidget {
   @override
@@ -32,8 +35,20 @@ class AllCategoriesScreen extends StatelessWidget {
                   itemBuilder: (context, index) {
                     return Container(
                       height: MediaQuery.of(context).size.height * 0.2,
-                      child: categoriesContainer(
-                          cubit.categories![index], cubit, context),
+                      child: CategoryCard(
+                        category: cubit.categories![index],
+                        onCategoryPressed: () {
+                          cubit
+                              .getProductsByCategory(
+                                  cubit.categories![index].id)
+                              .then((value) {
+                            navigateTo(
+                                context,
+                                ProductsByCategoryScreen(
+                                    '${cubit.categories![index].name}'));
+                          });
+                        },
+                      ),
                     );
                   }),
             ));

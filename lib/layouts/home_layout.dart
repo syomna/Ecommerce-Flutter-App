@@ -1,11 +1,9 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shop/layouts/cubit/layout_cubit.dart';
-import 'package:shop/layouts/cubit/layout_states.dart';
 import 'package:shop/modules/navbar_screens/cart/cart_screen.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_cubit.dart';
-
+import 'package:shop/shared/blocs/layout_cubit/layout_cubit.dart';
+import 'package:shop/shared/blocs/layout_cubit/layout_states.dart';
 import 'package:shop/shared/components/components.dart';
 import 'package:shop/shared/styles/themes.dart';
 
@@ -16,7 +14,7 @@ class HomeLayout extends StatelessWidget {
       listener: (context, state) {},
       builder: (context, state) {
         var cubit = LayoutCubit.get(context);
-        print('rebuild layout');
+
         return Scaffold(
           appBar: AppBar(
             title: Text(cubit.layoutTitle[cubit.currentIndex],
@@ -30,36 +28,17 @@ class HomeLayout extends StatelessWidget {
                       onPressed: () {
                         navigateTo(context, CartScreen());
                       }),
-                  if (HomeCubit.get(context).cartModel != null)
-                    CircleAvatar(
-                      child: Text(
-                        '${HomeCubit.get(context).cartModel!.data?.cartItems.length}',
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                      minRadius: 10,
-                      backgroundColor: Colors.red,
-                    )
                 ],
               )
             ],
           ),
           bottomNavigationBar: CurvedNavigationBar(
             items: items,
-            backgroundColor: defaultColor,
+            backgroundColor: kDefaultColor,
             onTap: (value) {
               cubit.changeIndex(value);
             },
           ),
-
-          // BottomNavigationBar(
-          //   backgroundColor: Colors.white,
-          //   showUnselectedLabels: false,
-          //   showSelectedLabels:  false,
-          //     type: BottomNavigationBarType.fixed,
-          //     currentIndex: cubit.currentIndex,
-          //     onTap: (value) => cubit.changeIndex(value),
-          //     items: cubit.bottomNavList),
           body: cubit.layoutBody[cubit.currentIndex],
         );
       },

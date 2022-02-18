@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop/models/cart_model.dart';
 import 'package:shop/modules/navbar_screens/cart/check_order_screen.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_cubit.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_states.dart';
+import 'package:shop/shared/blocs/home_cubit/home_cubit.dart';
+import 'package:shop/shared/blocs/home_cubit/home_states.dart';
 import 'package:shop/modules/navbar_screens/products/product_details_screen.dart';
 import 'package:shop/shared/components/components.dart';
 import 'package:shop/shared/styles/themes.dart';
+import 'package:shop/shared/widgets/export_widget.dart';
 
 class CartScreen extends StatelessWidget {
   @override
@@ -37,6 +38,7 @@ class CartScreen extends StatelessWidget {
       },
       builder: (context, state) {
         var cubit = HomeCubit.get(context);
+      List<CartItems>? cartList =  cubit.cartModel?.data?.cartItems;
         return Scaffold(
           appBar: AppBar(
             title: Text(
@@ -44,6 +46,10 @@ class CartScreen extends StatelessWidget {
               style: appBarStyle(context),
             ),
           ),
+          // body: Padding(
+          //   padding: const EdgeInsets.all(8),
+          //   child: buildEmptyCart(context),
+          // ),
           body: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -51,17 +57,17 @@ class CartScreen extends StatelessWidget {
               children: [
                 Container(
                   height: MediaQuery.of(context).size.height * 0.7,
-                  child: cubit.cartModel!.data!.cartItems.isEmpty
+                  child: cubit.cartModel == null || cartList!.isEmpty
                       ? buildEmptyCart(context)
                       : ListView.builder(
-                          itemCount: cubit.cartModel!.data?.cartItems.length,
+                          itemCount: cartList.length,
                           itemBuilder: (context, index) {
                             return Container(
                                 height:
                                     MediaQuery.of(context).size.height * 0.25,
                                 padding: const EdgeInsets.all(10.0),
                                 child: buildcartItem(
-                                    cubit.cartModel!.data!.cartItems[index],
+                                    cartList[index],
                                     cubit,
                                     index,
                                     context));
@@ -72,11 +78,14 @@ class CartScreen extends StatelessWidget {
                       .toUpperCase(),
                   style: Theme.of(context).textTheme.bodyText1,
                 ),
-                defaultButton('order now'.toUpperCase(), () {
-                  cubit.getUserAddress().then((value) {
-                    navigateTo(context, CheckOrderScreen());
-                  });
-                }, context)
+                DefaultButton(
+                    buttonText: 'order now'.toUpperCase(),
+                    onPressed: () {
+                      cubit.getUserAddress().then((value) {
+                        navigateTo(context, CheckOrderScreen());
+                      });
+                    }),
+                const SizedBox(height: 4)
               ],
             ),
           ),
@@ -158,7 +167,7 @@ class CartScreen extends StatelessWidget {
                       Text(
                         '${kFormatCurrency.format(model.cartProduct!.price)}',
                         style: TextStyle(
-                            color: defaultColor, fontWeight: FontWeight.bold),
+                            color: kDefaultColor, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -200,7 +209,7 @@ class CartScreen extends StatelessWidget {
 
   Widget buildQuantityButton(IconData icon, Function onPressed) {
     return MaterialButton(
-      color: defaultColor,
+      color: kDefaultColor,
       minWidth: 15,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Icon(icon, color: Colors.white),

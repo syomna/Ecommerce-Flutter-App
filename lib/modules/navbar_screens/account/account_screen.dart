@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop/modules/navbar_screens/account/address/address_screen.dart';
 import 'package:shop/modules/navbar_screens/account/orders/orders_screen.dart';
 import 'package:shop/modules/navbar_screens/account/update/update_account_screen.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_cubit.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_states.dart';
+import 'package:shop/shared/blocs/home_cubit/home_cubit.dart';
+import 'package:shop/shared/blocs/home_cubit/home_states.dart';
 import 'package:shop/shared/components/components.dart';
 import 'package:shop/shared/styles/themes.dart';
 
@@ -98,11 +98,11 @@ class AccountScreen extends StatelessWidget {
         onTap: onTap as void Function()?,
         leading: Icon(
           leadingIcon,
-          color: defaultColor,
+          color: kDefaultColor,
         ),
         trailing: Icon(
           Icons.arrow_forward_ios,
-          color: defaultColor,
+          color: kDefaultColor,
         ),
         title: Text(
           title,

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop/models/order_details_model.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_cubit.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_states.dart';
+import 'package:shop/shared/blocs/home_cubit/home_cubit.dart';
+import 'package:shop/shared/blocs/home_cubit/home_states.dart';
 import 'package:shop/shared/components/components.dart';
 import 'package:shop/shared/styles/themes.dart';
 
@@ -69,7 +69,7 @@ class OrderDetailsScreen extends StatelessWidget {
           ),
           Spacer(),
           Text(
-            '${kFormatCurrency.format(cubit.orderDetailsModel.data!.total)}',
+            '${kFormatCurrency.format(cubit.orderDetailsModel.data?.cost)}',
             style: Theme.of(context).textTheme.bodyText1,
           )
         ],
@@ -134,7 +134,7 @@ class OrderDetailsScreen extends StatelessWidget {
                 Text(
                   '${kFormatCurrency.format(product.price)}',
                   style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                      fontWeight: FontWeight.bold, color: defaultColor),
+                      fontWeight: FontWeight.bold, color: kDefaultColor),
                 )
               ],
             ),

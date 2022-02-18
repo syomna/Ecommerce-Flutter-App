@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_cubit.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_states.dart';
+import 'package:shop/shared/blocs/home_cubit/home_cubit.dart';
+import 'package:shop/shared/blocs/home_cubit/home_states.dart';
 import 'package:shop/shared/components/components.dart';
+import 'package:shop/shared/styles/themes.dart';
+import 'package:shop/shared/widgets/export_widget.dart';
 
 class UpdateAccountScreen extends StatelessWidget {
   final nameController = TextEditingController();
@@ -49,68 +51,71 @@ class UpdateAccountScreen extends StatelessWidget {
                     children: [
                       if (state is HomeUpdateUserDataLoadingState)
                         LinearProgressIndicator(),
-                    const  SizedBox(
+                      const SizedBox(
                         height: 10.0,
                       ),
-                   const   SizedBox(
+                      const SizedBox(
                         height: 20.0,
                       ),
-                      defaultTextField(
+                      DefaultTextFormField(
                         label: 'Name',
                         controller: nameController,
                         prefixIcon: Icons.person,
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value!.isEmpty) {
                             return 'please enter your name';
                           }
                         },
                         keyboardType: TextInputType.name,
                       ),
-                    const  SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
-                      defaultTextField(
+                      DefaultTextFormField(
                         label: 'Email',
                         controller: emailController,
                         prefixIcon: Icons.email_outlined,
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value!.isEmpty) {
                             return 'please enter your email address';
                           }
                         },
                         keyboardType: TextInputType.emailAddress,
                       ),
-                   const   SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
-                      defaultTextField(
+                      DefaultTextFormField(
                         label: 'Phone',
                         controller: phoneController,
                         prefixIcon: Icons.phone,
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value!.isEmpty) {
                             return 'please enter your phone number';
                           }
                         },
                         keyboardType: TextInputType.phone,
                       ),
-                    const  SizedBox(
+                      const SizedBox(
                         height: 20.0,
                       ),
                       state is HomeUpdateUserDataLoadingState
                           ? Center(
                               child: CircularProgressIndicator(),
                             )
-                          : defaultButton('Update', () {
-                              if (formKey.currentState!.validate()) {
-                                print(cubit.userModel.data!.image);
-                                cubit.updateProfile(
-                                  name: nameController.text,
-                                  email: emailController.text.trim(),
-                                  phone: phoneController.text.trim(),
-                                );
-                              }
-                            }, context, isUpdate: true),
+                          : DefaultButton(
+                              buttonText: 'Update',
+                              onPressed: () {
+                                if (formKey.currentState!.validate()) {
+                                  print(cubit.userModel.data!.image);
+                                  cubit.updateProfile(
+                                    name: nameController.text,
+                                    email: emailController.text.trim(),
+                                    phone: phoneController.text.trim(),
+                                  );
+                                }
+                              },
+                              isUpdate: true),
                     ],
                   ),
                 ),

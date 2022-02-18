@@ -1,26 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop/layouts/home_layout.dart';
-import 'package:shop/modules/login/cubit/login_cubit.dart';
-import 'package:shop/modules/login/cubit/login_states.dart';
 import 'package:shop/modules/register/register_screen.dart';
+import 'package:shop/shared/blocs/login_cubit/login_cubit.dart';
+import 'package:shop/shared/blocs/login_cubit/login_states.dart';
 import 'package:shop/shared/components/components.dart';
-import 'package:shop/shared/network/constants.dart';
-import 'package:shop/shared/network/local/cache_helper.dart';
 import 'package:shop/shared/styles/themes.dart';
+import 'package:shop/shared/widgets/export_widget.dart';
 
-class LoginScreen extends StatelessWidget {
-  
+class LoginScreen extends StatefulWidget {
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
+
   final passwordController = TextEditingController();
+
   final formKey = GlobalKey<FormState>();
 
-  void _login(cubit) {
-    if (formKey.currentState!.validate()) {
-      cubit.userLogin(
-          email: emailController.text.trim(),
-          password: passwordController.text.trim());
-    }
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -29,22 +33,12 @@ class LoginScreen extends StatelessWidget {
       listener: (context, state) {
         if (state is LoginErrorState) {
           print(state.error);
+
           showToast(
-              toastText: state.error.toString(), toastColor: ToastColor.ERROR);
+              toastText: 'Something wrong happened!', toastColor: ToastColor.ERROR);
         } else if (state is LoginSuccessState) {
-          if (state.userModel!.status!) {
-            showToast(
-                    toastText: state.userModel!.message,
-                    toastColor: ToastColor.SUCESS)
-                .then((value) {
-              CacheHelper.setData(
-                      key: 'token', value: state.userModel!.data!.token)
-                  .then((value) {
-                token = state.userModel!.data!.token;
-                navigateAndReplacment(context, HomeLayout());
-              });
-            });
-            print(state.userModel!.data!.token);
+          if (state.userModel!.status! == true) {
+            navigateAndRemove(context, HomeLayout());
           } else {
             showToast(
                 toastText: state.userModel!.message,
@@ -54,6 +48,7 @@ class LoginScreen extends StatelessWidget {
       },
       builder: (context, state) {
         var cubit = LoginCubit.get(context);
+
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.white,
@@ -73,25 +68,24 @@ class LoginScreen extends StatelessWidget {
                         style: Theme.of(context)
                             .textTheme
                             .headline4
-                            ?.copyWith(
-                                fontWeight: FontWeight.bold),
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
                         'Sign in to continue!',
                         style: Theme.of(context)
                             .textTheme
-                            .headline6!
-                            .copyWith(color: Colors.grey),
+                            .headline6
+                            ?.copyWith(color: Colors.grey),
                       ),
                       const SizedBox(
                         height: 30,
                       ),
-                      defaultTextField(
+                      DefaultTextFormField(
                           label: 'Email',
                           controller: emailController,
                           prefixIcon: Icons.email_outlined,
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'please enter your email address';
                             }
                           },
@@ -99,7 +93,7 @@ class LoginScreen extends StatelessWidget {
                       const SizedBox(
                         height: 20,
                       ),
-                      defaultTextField(
+                      DefaultTextFormField(
                         label: 'Password',
                         controller: passwordController,
                         prefixIcon: Icons.lock_outline,
@@ -108,7 +102,7 @@ class LoginScreen extends StatelessWidget {
                           _login(cubit);
                         },
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value!.isEmpty) {
                             return 'password cannot be too short';
                           }
                         },
@@ -123,33 +117,15 @@ class LoginScreen extends StatelessWidget {
                           ? Center(
                               child: CircularProgressIndicator(),
                             )
-                          : defaultButton('login'.toUpperCase(), () {
-                              _login(cubit);
-                            }, context),
+                          : DefaultButton(
+                              buttonText: 'login'.toUpperCase(),
+                              onPressed: () {
+                                _login(cubit);
+                              }),
                       const SizedBox(
                         height: 15,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Don\'t have an account?',
-                            style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                              fontWeight: FontWeight.normal
-                            ),
-                          ),
-                          TextButton(
-                
-                              onPressed: () {
-                                navigateTo(context, RegisterScreen());
-                              },
-                              child: Text('Register',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1!
-                                      .copyWith(color: defaultColor)))
-                        ],
-                      )
+                      _registerLine(context)
                     ],
                   ),
                 ),
@@ -159,5 +135,37 @@ class LoginScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  Row _registerLine(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Don\'t have an account?',
+          style: Theme.of(context)
+              .textTheme
+              .bodyText1
+              ?.copyWith(fontWeight: FontWeight.normal),
+        ),
+        TextButton(
+            onPressed: () {
+              navigateTo(context, RegisterScreen());
+            },
+            child: Text('Register',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1
+                    ?.copyWith(color: kDefaultColor)))
+      ],
+    );
+  }
+
+  void _login(cubit) {
+    if (formKey.currentState!.validate()) {
+      cubit.userLogin(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim());
+    }
   }
 }

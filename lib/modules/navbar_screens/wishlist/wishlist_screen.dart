@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_cubit.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_states.dart';
-import 'package:shop/shared/components/components.dart';
+import 'package:shop/shared/blocs/home_cubit/home_cubit.dart';
+import 'package:shop/shared/blocs/home_cubit/home_states.dart';
+import 'package:shop/shared/widgets/export_widget.dart';
 
 class WishListScreen extends StatelessWidget {
   @override
@@ -19,20 +19,20 @@ class WishListScreen extends StatelessWidget {
         var cubit = HomeCubit.get(context);
         if (cubit.favoriteModel.data!.data.isEmpty) {
           return Center(
-            child: Text('No Favorites' , style: Theme.of(context).textTheme.bodyText1,),
+            child: Text(
+              'No Favorites',
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
           );
         }
         return ListView.separated(
-          separatorBuilder: (context , index) => const Divider(
-           
-          ),
+            separatorBuilder: (context, index) => const Divider(),
             itemCount: cubit.favoriteModel.data!.data.length,
             itemBuilder: (context, index) {
               print(cubit.favoriteModel.data?.data.length);
-              return buildListViewItems(
-                  cubit.favoriteModel.data?.data[index].product,
-                  context,
-                  cubit);
+              return BuildListViewItems(
+                  model: cubit.favoriteModel.data?.data[index].product,
+                  cubit: cubit);
             });
       },
     );

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +23,7 @@ import 'package:shop/models/search_model.dart';
 import 'package:shop/models/update_cart_model.dart';
 import 'package:shop/models/user_model.dart';
 import 'package:shop/modules/login/login_screen.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_states.dart';
+import 'package:shop/shared/blocs/home_cubit/home_states.dart';
 import 'package:shop/shared/components/components.dart';
 import 'package:shop/shared/network/constants.dart';
 import 'package:shop/shared/network/local/cache_helper.dart';
@@ -41,15 +39,16 @@ class HomeCubit extends Cubit<HomeStates> {
 
   void getCategories() async {
     emit(HomeGetCategoriesLoadingState());
-    await DioHelper.getData(url: kCategories).then((value) {
-      // print(value.data);
-      categoriesModel = Categories.fromJson(value.data);
+    try {
+      Response _respones = await DioHelper.getData(url: kCategories);
+
+      categoriesModel = Categories.fromJson(_respones.data);
       categories = categoriesModel.data!.data;
       emit(HomeGetCategoriesSuccessState());
-    }).catchError((error) {
+    } catch (error) {
       print(error);
       emit(HomeGetCategoriesErrorState(error.toString()));
-    });
+    }
   }
 
   late HomeData homeData;
@@ -60,26 +59,24 @@ class HomeCubit extends Cubit<HomeStates> {
 
   void getHomeData() async {
     emit(HomeGetDataLoadingState());
-    await DioHelper.getData(url: kHomeData, token: token).then((value) {
-      homeData = HomeData.fromJson(value.data);
-      print(homeData.data!.banners!.length);
+
+    try {
+      Response _response =
+          await DioHelper.getData(url: kHomeData, token: token);
+      homeData = HomeData.fromJson(_response.data);
       banners = homeData.data!.banners;
       products = homeData.data!.products;
 
-      print(products!.length);
-
-      homeData.data!.products!.forEach((element) {
-        favorites.addAll({element.id: element.inFavorites});
-      });
-      homeData.data!.products!.forEach((element) {
-        cart.addAll({element.id: element.inCart});
-      });
-
-      emit(HomeGetDataSuccessState());
-    }).catchError((error) {
+      for (var product in homeData.data!.products!) {
+        favorites.addAll({product.id: product.inFavorites});
+      }
+      for (var product in homeData.data!.products!) {
+        cart.addAll({product.id: product.inCart});
+      }
+    } catch (error) {
       print(error);
       emit(HomeGetDataErrorState(error.toString()));
-    });
+    }
   }
 
   ChangeFavoritesModel? changeFavoritesModel;
@@ -89,12 +86,11 @@ class HomeCubit extends Cubit<HomeStates> {
 
     favorites[productId] = !favorites[productId]!;
     emit(HomeGetFavoritesChangeState());
-    await DioHelper.postData(
-        url: kfavorites,
-        token: token,
-        data: {'product_id': productId}).then((value) {
-      print(value.data);
-      changeFavoritesModel = ChangeFavoritesModel.fromJson(value.data);
+
+    try {
+      Response _response = await DioHelper.postData(
+          url: kfavorites, token: token, data: {'product_id': productId});
+      changeFavoritesModel = ChangeFavoritesModel.fromJson(_response.data);
       if (!changeFavoritesModel!.status!) {
         favorites[productId] = !favorites[productId]!;
       } else {
@@ -102,28 +98,29 @@ class HomeCubit extends Cubit<HomeStates> {
       }
 
       emit(HomeChangeFavoritesSuccessState(changeFavoritesModel));
-    }).catchError((error) {
+    } catch (error) {
       print(error.toString());
       favorites[productId] = !favorites[productId]!;
       emit(HomeChangeFavoritesErrorState(error.toString()));
-    });
+    }
   }
 
   late FavoriteModel favoriteModel;
 
   void getFavorites() async {
     emit(HomeGetFavoritesLoadingState());
-    await DioHelper.getData(
-      url: kfavorites,
-      token: token,
-    ).then((value) {
-      //  print(value.data);
-      favoriteModel = FavoriteModel.fromJson(value.data);
+
+    try {
+      Response _response = await DioHelper.getData(
+        url: kfavorites,
+        token: token,
+      );
+      favoriteModel = FavoriteModel.fromJson(_response.data);
       emit(HomeGetFavoritesSuccessState());
-    }).catchError((error) {
+    } catch (error) {
       print(error.toString());
       emit(HomeGetFavoritesErrorState(error.toString()));
-    });
+    }
   }
 
   ChangeCartModel? changeCartModel;
@@ -153,7 +150,7 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
- CartModel? cartModel;
+  CartModel? cartModel;
 
   void getCart() async {
     emit(HomeGetCartLoadingState());
@@ -164,7 +161,8 @@ class HomeCubit extends Cubit<HomeStates> {
       print(value.data);
       cartModel = CartModel.fromJson(value.data);
       CacheHelper.setData(
-          key: 'CartLength', value: cartModel?.data!.cartItems.length);
+          key: 'CartLength', value: cartModel?.data!.cartItems!.length);
+      print('Cart Length ${cartModel?.data?.cartItems?.length}');
       emit(HomeGetCartSuccessState());
     }).catchError((error) {
       print(error.toString());
@@ -175,7 +173,7 @@ class HomeCubit extends Cubit<HomeStates> {
   List<int> counter = [];
 
   quantityIncrement(int index) {
-    if (counter.length < cartModel!.data!.cartItems.length) {
+    if (counter.length < cartModel!.data!.cartItems!.length) {
       counter.add(1);
     }
     counter[index]++;
@@ -183,7 +181,7 @@ class HomeCubit extends Cubit<HomeStates> {
   }
 
   quantityDecrement(int index) {
-    if (counter.length < cartModel!.data!.cartItems.length) {
+    if (counter.length < cartModel!.data!.cartItems!.length) {
       counter.add(1);
     }
     counter[index]--;
@@ -326,7 +324,7 @@ class HomeCubit extends Cubit<HomeStates> {
   void logout(context) {
     CacheHelper.removeData(key: 'token').then((value) {
       if (value) {
-        navigateAndReplacment(context, LoginScreen());
+        navigateAndRemove(context, LoginScreen());
       }
     });
   }
@@ -339,11 +337,11 @@ class HomeCubit extends Cubit<HomeStates> {
     bool isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
 
     if (isLocationServiceEnabled) {
-     position = await Geolocator.getCurrentPosition(
+      position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
       print('latitude is ${position?.latitude}');
       print('longitude is ${position?.longitude}');
-      if(position != null){
+      if (position != null) {
         List<Placemark> placemarks = await placemarkFromCoordinates(
             position!.latitude, position!.longitude);
         address = placemarks.first;
@@ -476,7 +474,7 @@ class HomeCubit extends Cubit<HomeStates> {
         .then((value) {
       print(value.data);
       addOrderModel = AddOrderModel.fromJson(value.data);
-      cartModel?.data!.cartItems.clear();
+      cartModel?.data!.cartItems!.clear();
       // deleteCart();
       emit(HomeAddOrderSuccessState(addOrderModel));
     }).catchError((error) {
@@ -503,14 +501,19 @@ class HomeCubit extends Cubit<HomeStates> {
 
   Future getOrderDetails(int? orderId) async {
     emit(HomeGetOrderDetailsLoadingState());
-    await DioHelper.getData(url: kOrders + '/' + '$orderId', token: token)
-        .then((value) {
-      print(value.data);
-      orderDetailsModel = OrderDetailsModel.fromJson(value.data);
-      emit(HomeGetOrderDetailsSuccessState());
-    }).catchError((error) {
+    try {
+      await DioHelper.getData(url: kOrders + '/' + '$orderId', token: token)
+          .then((value) {
+        print(value.data);
+        orderDetailsModel = OrderDetailsModel.fromJson(value.data);
+        emit(HomeGetOrderDetailsSuccessState());
+      }).catchError((error) {
+        print(error.toString());
+        emit(HomeGetOrderDetailsErrorState(error.toString()));
+      });
+    } catch (error) {
       print(error.toString());
       emit(HomeGetOrderDetailsErrorState(error.toString()));
-    });
+    }
   }
 }

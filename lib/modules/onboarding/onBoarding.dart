@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shop/modules/login/login_screen.dart';
 import 'package:shop/shared/components/components.dart';
 import 'package:shop/shared/network/local/cache_helper.dart';
 import 'package:shop/shared/styles/themes.dart';
+import 'package:shop/shared/widgets/export_widget.dart';
 
 class OnBoarding extends StatefulWidget {
   @override
@@ -14,39 +16,32 @@ class _OnBoardingState extends State<OnBoarding> {
 
   bool isLast = false;
 
-  List<OnBoardingData> onBoarding = [
-    OnBoardingData(
-        title: 'Shopping Online',
-        subtitle: 'We help you to get what you want in the most easiest way!',
-        image: 'assets/images/onboarding_one.png'),
-    
-    OnBoardingData(
-        title: 'Adding To Cart',
-        subtitle: 'Collect your products to order them in one package!',
-        image: 'assets/images/onboarding_two.png'),
-        OnBoardingData(
-        title: 'Delivery',
-        subtitle: 'Order and get your products wherever you are!',
-        image: 'assets/images/onboarding_three.png'),
-  ];
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: Colors.white,
+            statusBarIconBrightness: Brightness.dark),
         actions: [
           TextButton(
               onPressed: () {
                 CacheHelper.setData(key: 'onBoarding', value: false)
                     .then((value) {
                   print(value);
-                  navigateAndReplacment(context, LoginScreen());
+                  navigateAndRemove(context, LoginScreen());
                 });
               },
               child: Text(
                 'skip'.toUpperCase(),
                 style: TextStyle(
-                    color: defaultColor,
+                    color: kDefaultColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 16),
               ))
@@ -59,8 +54,7 @@ class _OnBoardingState extends State<OnBoarding> {
           children: [
             Expanded(
               child: PageView.builder(
-                allowImplicitScrolling: true,
-                
+                  allowImplicitScrolling: true,
                   onPageChanged: (value) {
                     if (value == onBoarding.length - 1) {
                       print('$value the last');
@@ -80,17 +74,17 @@ class _OnBoardingState extends State<OnBoarding> {
                     return boardingBuild(onBoarding[index], context);
                   }),
             ),
-          const  SizedBox(
+            const SizedBox(
               height: 15.0,
             ),
             Row(
               children: [
-                buildSmoothPageIndicator(
+                BuildSmoothPageIndicator(
                     pageController: pageController,
                     listLength: onBoarding.length),
                 Spacer(),
                 FloatingActionButton(
-                  backgroundColor: defaultColor,
+                    backgroundColor: kDefaultColor,
                     child: Icon(Icons.arrow_right_outlined),
                     onPressed: () {
                       if (isLast == false) {
@@ -101,7 +95,7 @@ class _OnBoardingState extends State<OnBoarding> {
                         CacheHelper.setData(key: 'onBoarding', value: false)
                             .then((value) {
                           print(value);
-                          navigateAndReplacment(context, LoginScreen());
+                          navigateAndRemove(context, LoginScreen());
                         });
                       }
                     }),
@@ -117,8 +111,11 @@ class _OnBoardingState extends State<OnBoarding> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Image(image: AssetImage(data.image) , errorBuilder: (context , child , stack) => Icon(Icons.broken_image),),
-      const  SizedBox(
+        Image(
+          image: AssetImage(data.image),
+          errorBuilder: (context, child, stack) => Icon(Icons.broken_image),
+        ),
+        const SizedBox(
           height: 15,
         ),
         ListTile(
@@ -127,28 +124,19 @@ class _OnBoardingState extends State<OnBoarding> {
             textAlign: TextAlign.center,
             style: Theme.of(context)
                 .textTheme
-                .headline4!
-                .copyWith(fontWeight: FontWeight.bold, color: Colors.black),
+                .headline4
+                ?.copyWith(fontWeight: FontWeight.bold, color: Colors.black),
           ),
           subtitle: Text(
             data.subtitle,
             textAlign: TextAlign.center,
             style: Theme.of(context)
                 .textTheme
-                .headline6!
-                .copyWith(color: Colors.grey[700]),
+                .headline6
+                ?.copyWith(color: Colors.grey[700]),
           ),
         )
       ],
     );
   }
-}
-
-class OnBoardingData {
-  String title;
-  String subtitle;
-  String image;
-
-  OnBoardingData(
-      {required this.title, required this.subtitle, required this.image});
 }

@@ -1,14 +1,14 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop/modules/navbar_screens/categories/all_categories_screen.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_cubit.dart';
-import 'package:shop/modules/navbar_screens/cubit/home_states.dart';
 import 'package:shop/modules/navbar_screens/products/all_products_screen.dart';
+import 'package:shop/modules/navbar_screens/products/product_by_category_screen.dart';
+import 'package:shop/shared/blocs/home_cubit/home_cubit.dart';
+import 'package:shop/shared/blocs/home_cubit/home_states.dart';
 import 'package:shop/shared/network/constants.dart';
 import 'package:shop/shared/components/components.dart';
-import 'package:shop/shared/styles/themes.dart';
+import 'package:shop/shared/widgets/export_widget.dart';
+import 'package:shop/widgets/export_widgets.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -43,36 +43,23 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildCarouselSlider(cubit, context),
-              const SizedBox(
-                height: 15,
-              ),
-              buildCustomText('Categories', context,
-                  () => navigateTo(context, AllCategoriesScreen())),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.15,
-                child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: cubit.categories!.length,
-                    itemBuilder: (context, index) {
-                      return categoriesContainer(
-                          cubit.categories![index], cubit, context);
-                    }),
+              HomeCarouselSlider(
+                banners: cubit.banners!,
               ),
               const SizedBox(
                 height: 15,
               ),
-              buildCustomText('Products', context,
-                  () => navigateTo(context, AllProductsScreen())),
-              Container(
-                  height: MediaQuery.of(context).size.height * 0.7,
-                  child: GridView.builder(
-                      scrollDirection: Axis.horizontal,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2, childAspectRatio: 1.4),
-                      itemCount: cubit.products!.length,
-                      itemBuilder: (context, index) => buildGridItems(
-                          cubit.products![index], context, cubit)))
+              HomeCustomText(
+                  text: 'Categories',
+                  onPressed: () => navigateTo(context, AllCategoriesScreen())),
+              _categoriesSection(context, cubit),
+              const SizedBox(
+                height: 15,
+              ),
+              HomeCustomText(
+                  text: 'Products',
+                  onPressed: () => navigateTo(context, AllProductsScreen())),
+              _gridViewSection(context, cubit)
             ],
           ),
         );
@@ -80,54 +67,39 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget buildCustomText(String text, context, Function onPressed) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
-      child: Row(
-        children: [
-          Text(
-            text,
-            style: Theme.of(context)
-                .textTheme
-                .headline5!
-                .copyWith(fontWeight: FontWeight.bold),
-          ),
-          Spacer(),
-          TextButton(
-              onPressed: onPressed as void Function()?,
-              child: Text(
-                'view all'.toUpperCase(),
-                style:
-                    TextStyle(color: defaultColor, fontWeight: FontWeight.bold),
-              ))
-        ],
-      ),
+  Widget _categoriesSection(BuildContext context, HomeCubit cubit) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.15,
+      child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: cubit.categories!.length,
+          itemBuilder: (context, index) {
+            return CategoryCard(
+              category: cubit.categories![index],
+              onCategoryPressed: () {
+                cubit
+                    .getProductsByCategory(cubit.categories![index].id)
+                    .then((value) {
+                  navigateTo(
+                      context,
+                      ProductsByCategoryScreen(
+                          '${cubit.categories![index].name}'));
+                });
+              },
+            );
+          }),
     );
   }
 
-  Widget buildCarouselSlider(HomeCubit cubit, BuildContext context) {
-    return CarouselSlider(
-      items: cubit.banners!
-          .map((e) => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CachedNetworkImage(
-                  fit: BoxFit.fill,
-                  imageUrl: '${e.image}',
-                  progressIndicatorBuilder: (context, url, downloadProgress) =>
-                      Center(
-                        child: CircularProgressIndicator(
-                            value: downloadProgress.progress),
-                      ),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
-                ),
-              ))
-          .toList(),
-      options: CarouselOptions(
-        aspectRatio: 2,
-        enlargeCenterPage: true,
-        scrollDirection: Axis.horizontal,
-        autoPlay: true,
-      ),
-    );
+  Widget _gridViewSection(BuildContext context, HomeCubit cubit) {
+    return Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        child: GridView.builder(
+            scrollDirection: Axis.horizontal,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, childAspectRatio: 1.4),
+            itemCount: cubit.products!.length,
+            itemBuilder: (context, index) =>
+                BuildGridItems(model: cubit.products![index], cubit: cubit)));
   }
 }
